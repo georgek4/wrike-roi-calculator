@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrike Value Engineering — ROI & Pricing Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <svg class="wrike-logo" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <text x="0" y="24" font-family="Inter, sans-serif" font-weight="800" font-size="24" fill="#08CF65">Wrike</text>
+            </svg>
+            <span class="nav-divider"></span>
+            <span class="nav-title">Value Engineering Hub</span>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button class="nav-tab" data-page="roi-calculator" onclick="navigateTo('roi-calculator')">
+                <i class="fas fa-calculator"></i> ROI Calculator
+            </button>
+            <button class="nav-tab" data-page="pricing" onclick="navigateTo('pricing')">
+                <i class="fas fa-tags"></i> Pricing & Quotes
+            </button>
+            <button class="nav-tab" data-page="saved" onclick="navigateTo('saved')">
+                <i class="fas fa-folder-open"></i> Saved Assessments
+            </button>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-icon" title="Help" onclick="showHelp()"><i class="fas fa-question-circle"></i></button>
+        </div>
+    </nav>
+
+    <!-- ==================== DASHBOARD PAGE ==================== -->
+    <div id="page-dashboard" class="page active">
+        <div class="dashboard-hero">
+            <div class="hero-content">
+                <h1>Wrike Value Engineering</h1>
+                <p class="hero-subtitle">Quantify business impact. Build compelling business cases. Accelerate deal velocity.</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Quick Start Cards -->
+            <div class="dash-card scenario-card" onclick="startScenario('new')">
+                <div class="scenario-icon new-customer"><i class="fas fa-rocket"></i></div>
+                <h3>New Customer</h3>
+                <p>Build a business case for prospects evaluating Wrike for the first time</p>
+                <span class="card-action">Start Assessment <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="dash-card scenario-card" onclick="startScenario('existing')">
+                <div class="scenario-icon existing-customer"><i class="fas fa-chart-bar"></i></div>
+                <h3>Existing Customer ROI</h3>
+                <p>Quantify realized value for current Wrike customers</p>
+                <span class="card-action">Start Assessment <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="dash-card scenario-card" onclick="startScenario('expansion')">
+                <div class="scenario-icon expansion"><i class="fas fa-expand-arrows-alt"></i></div>
+                <h3>License Expansion</h3>
+                <p>Model ROI for expanding to new departments and workflows</p>
+                <span class="card-action">Start Assessment <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="dash-card scenario-card" onclick="navigateTo('pricing')">
+                <div class="scenario-icon pricing"><i class="fas fa-file-invoice-dollar"></i></div>
+                <h3>Build a Quote</h3>
+                <p>Configure pricing and generate customer-ready quotes</p>
+                <span class="card-action">Open Pricing <i class="fas fa-arrow-right"></i></span>
+            </div>
+        </div>
+
+        <!-- Verticals Section -->
+        <div class="section-header">
+            <h2>Industry Verticals</h2>
+            <p>Select a vertical to see tailored ROI drivers and benchmarks</p>
+        </div>
+        <div class="verticals-grid">
+            <div class="vertical-card" onclick="startVertical('plm')">
+                <div class="vertical-icon plm"><i class="fas fa-cogs"></i></div>
+                <h4>Product Lifecycle Management</h4>
+                <p>Accelerate product development, reduce time-to-market, streamline cross-functional handoffs</p>
+                <div class="vertical-metrics">
+                    <span><strong>25-40%</strong> faster time-to-market</span>
+                    <span><strong>30%</strong> reduction in rework</span>
+                </div>
+            </div>
+            <div class="vertical-card" onclick="startVertical('csd')">
+                <div class="vertical-icon csd"><i class="fas fa-headset"></i></div>
+                <h4>Client Service Delivery</h4>
+                <p>Improve client satisfaction, reduce delivery timelines, increase team utilization</p>
+                <div class="vertical-metrics">
+                    <span><strong>35%</strong> faster delivery</span>
+                    <span><strong>20%</strong> higher utilization</span>
+                </div>
+            </div>
+            <div class="vertical-card" onclick="startVertical('marketing')">
+                <div class="vertical-icon mktg"><i class="fas fa-bullhorn"></i></div>
+                <h4>Marketing — Creative & Campaigns</h4>
+                <p>Accelerate campaign execution, streamline creative reviews, improve brand consistency</p>
+                <div class="vertical-metrics">
+                    <span><strong>30-50%</strong> faster campaign launch</span>
+                    <span><strong>40%</strong> fewer revision cycles</span>
+                </div>
+            </div>
+            <div class="vertical-card" onclick="startVertical('pmo')">
+                <div class="vertical-icon pmo"><i class="fas fa-project-diagram"></i></div>
+                <h4>Project Management Office</h4>
+                <p>Standardize delivery, improve portfolio visibility, reduce project overruns</p>
+                <div class="vertical-metrics">
+                    <span><strong>25%</strong> fewer overruns</span>
+                    <span><strong>15-20%</strong> capacity gain</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ROI CALCULATOR PAGE ==================== -->
+    <div id="page-roi-calculator" class="page">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1><i class="fas fa-calculator"></i> ROI Calculator</h1>
+                <p>Quantify the business impact of Wrike across your organization</p>
+            </div>
+            <div class="page-header-right">
+                <button class="btn btn-outline" onclick="resetROICalculator()"><i class="fas fa-redo"></i> Reset</button>
+                <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save</button>
+                <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+            </div>
+        </div>
+
+        <!-- ROI Wizard Steps -->
+        <div class="wizard-progress">
+            <div class="wizard-step active" data-step="1">
+                <div class="step-num">1</div>
+                <span>Customer Info</span>
+            </div>
+            <div class="wizard-connector"></div>
+            <div class="wizard-step" data-step="2">
+                <div class="step-num">2</div>
+                <span>Current State</span>
+            </div>
+            <div class="wizard-connector"></div>
+            <div class="wizard-step" data-step="3">
+                <div class="step-num">3</div>
+                <span>Value Drivers</span>
+            </div>
+            <div class="wizard-connector"></div>
+            <div class="wizard-step" data-step="4">
+                <div class="step-num">4</div>
+                <span>Results</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Customer Info -->
+        <div class="wizard-panel active" id="roi-step-1">
+            <div class="form-grid two-col">
+                <div class="form-section">
+                    <h3><i class="fas fa-building"></i> Company Information</h3>
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="roi-company" placeholder="e.g., Acme Corporation">
+                    </div>
+                    <div class="form-group">
+                        <label>Prepared By</label>
+                        <input type="text" id="roi-prepared-by" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Assessment Date</label>
+                        <input type="date" id="roi-date" value="">
+                    </div>
+                    <div class="form-group">
+                        <label>Scenario Type</label>
+                        <select id="roi-scenario">
+                            <option value="new">New Customer — Prospective ROI</option>
+                            <option value="existing">Existing Customer — Value Realization</option>
+                            <option value="expansion">Existing Customer — License Expansion</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-layer-group"></i> Vertical & Scope</h3>
+                    <div class="form-group">
+                        <label>Primary Vertical</label>
+                        <select id="roi-vertical" onchange="updateVerticalDefaults()">
+                            <option value="plm">Product Lifecycle Management</option>
+                            <option value="csd">Client Service Delivery</option>
+                            <option value="marketing">Marketing — Creative & Campaigns</option>
+                            <option value="pmo">Project Management Office</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Licensed Users</label>
+                        <input type="number" id="roi-users" value="100" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Fully-Loaded Annual Salary ($)</label>
+                        <input type="number" id="roi-salary" value="95000" min="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Working Hours per Employee</label>
+                        <input type="number" id="roi-hours" value="2080" min="1000" max="3000">
+                    </div>
+
+                    <!-- Expansion-specific fields -->
+                    <div id="expansion-fields" class="conditional-section" style="display:none;">
+                        <div class="form-group">
+                            <label>Current Licensed Users</label>
+                            <input type="number" id="roi-current-users" value="50" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>New Users to Add</label>
+                            <input type="number" id="roi-new-users" value="50" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>New Departments / Workflows</label>
+                            <input type="text" id="roi-new-depts" placeholder="e.g., Marketing, Finance">
+                        </div>
+                    </div>
+
+                    <!-- Existing customer fields -->
+                    <div id="existing-fields" class="conditional-section" style="display:none;">
+                        <div class="form-group">
+                            <label>Months Using Wrike</label>
+                            <input type="number" id="roi-months-using" value="12" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Current Wrike Plan</label>
+                            <select id="roi-current-plan">
+                                <option value="team">Team</option>
+                                <option value="business" selected>Business</option>
+                                <option value="enterprise">Enterprise</option>
+                                <option value="pinnacle">Pinnacle</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="wizard-actions">
+                <span></span>
+                <button class="btn btn-primary" onclick="goToStep(2)">Next: Current State <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Step 2: Current State / Pain Points -->
+        <div class="wizard-panel" id="roi-step-2">
+            <div class="form-section full-width">
+                <h3><i class="fas fa-exclamation-triangle"></i> Current State — Time & Productivity Losses</h3>
+                <p class="section-desc">Estimate the weekly hours each employee spends on these inefficient activities <em>without</em> Wrike (or before Wrike optimization).</p>
+
+                <div class="pain-points-grid" id="pain-points-container">
+                    <!-- Dynamically populated based on vertical -->
+                </div>
+            </div>
+
+            <div class="form-section full-width" style="margin-top:24px;">
+                <h3><i class="fas fa-dollar-sign"></i> Additional Cost Drivers</h3>
+                <div class="form-grid two-col">
+                    <div class="form-group">
+                        <label>Annual Cost of Project Delays / Overruns ($)</label>
+                        <input type="number" id="roi-delay-cost" value="150000" min="0" step="5000">
+                        <span class="input-hint">Missed deadlines, expediting fees, penalties</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Cost of Rework / Errors ($)</label>
+                        <input type="number" id="roi-rework-cost" value="100000" min="0" step="5000">
+                        <span class="input-hint">Defects, revisions, quality issues</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Revenue at Risk from Inefficiency ($)</label>
+                        <input type="number" id="roi-revenue-risk" value="250000" min="0" step="10000">
+                        <span class="input-hint">Lost deals, delayed launches, missed market windows</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Annual Spend on Redundant Tools ($)</label>
+                        <input type="number" id="roi-tool-spend" value="50000" min="0" step="1000">
+                        <span class="input-hint">Overlapping PM, collaboration, and tracking tools</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <button class="btn btn-outline" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">Next: Value Drivers <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Step 3: Value Drivers / Improvement Assumptions -->
+        <div class="wizard-panel" id="roi-step-3">
+            <div class="form-section full-width">
+                <h3><i class="fas fa-chart-line"></i> Expected Improvements with Wrike</h3>
+                <p class="section-desc">Adjust the improvement percentages based on customer context. Defaults are based on Wrike benchmarks.</p>
+
+                <div class="value-drivers-grid" id="value-drivers-container">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <div class="form-section full-width" style="margin-top:24px;">
+                <h3><i class="fas fa-sliders-h"></i> Cost Recovery Assumptions</h3>
+                <div class="form-grid two-col">
+                    <div class="form-group">
+                        <label>% Reduction in Project Delays</label>
+                        <div class="slider-group">
+                            <input type="range" id="roi-delay-reduction" min="0" max="80" value="35" oninput="syncSlider(this)">
+                            <span class="slider-value">35%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>% Reduction in Rework</label>
+                        <div class="slider-group">
+                            <input type="range" id="roi-rework-reduction" min="0" max="80" value="30" oninput="syncSlider(this)">
+                            <span class="slider-value">30%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>% Revenue Risk Recovered</label>
+                        <div class="slider-group">
+                            <input type="range" id="roi-revenue-recovery" min="0" max="60" value="20" oninput="syncSlider(this)">
+                            <span class="slider-value">20%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>% Tool Consolidation Savings</label>
+                        <div class="slider-group">
+                            <input type="range" id="roi-tool-savings" min="0" max="100" value="60" oninput="syncSlider(this)">
+                            <span class="slider-value">60%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <button class="btn btn-outline" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-accent" onclick="calculateROI(); goToStep(4)"><i class="fas fa-chart-pie"></i> Calculate ROI</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Results -->
+        <div class="wizard-panel" id="roi-step-4">
+            <div class="results-header">
+                <h2 id="results-company-name">ROI Analysis Results</h2>
+                <div class="results-badges">
+                    <span class="badge" id="results-scenario-badge">New Customer</span>
+                    <span class="badge" id="results-vertical-badge">PMO</span>
+                </div>
+            </div>
+
+            <!-- Executive Summary KPIs -->
+            <div class="kpi-row">
+                <div class="kpi-card green">
+                    <span class="kpi-label">Total Annual Savings</span>
+                    <span class="kpi-value" id="kpi-total-savings">$0</span>
+                </div>
+                <div class="kpi-card blue">
+                    <span class="kpi-label">Wrike Investment</span>
+                    <span class="kpi-value" id="kpi-investment">$0</span>
+                </div>
+                <div class="kpi-card purple">
+                    <span class="kpi-label">Net Benefit (Year 1)</span>
+                    <span class="kpi-value" id="kpi-net-benefit">$0</span>
+                </div>
+                <div class="kpi-card orange">
+                    <span class="kpi-label">ROI</span>
+                    <span class="kpi-value" id="kpi-roi">0%</span>
+                </div>
+                <div class="kpi-card teal">
+                    <span class="kpi-label">Payback Period</span>
+                    <span class="kpi-value" id="kpi-payback">0 mo</span>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="results-grid">
+                <div class="results-section">
+                    <h3><i class="fas fa-clock"></i> Productivity Savings Breakdown</h3>
+                    <div class="breakdown-table" id="productivity-breakdown">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <div class="results-section">
+                    <h3><i class="fas fa-chart-pie"></i> Savings Distribution</h3>
+                    <canvas id="savings-chart" width="360" height="280"></canvas>
+                </div>
+            </div>
+
+            <div class="results-grid" style="margin-top:24px;">
+                <div class="results-section">
+                    <h3><i class="fas fa-dollar-sign"></i> Cost Avoidance & Recovery</h3>
+                    <div class="breakdown-table" id="cost-avoidance-breakdown">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <div class="results-section">
+                    <h3><i class="fas fa-calendar-alt"></i> 3-Year Value Projection</h3>
+                    <canvas id="projection-chart" width="360" height="280"></canvas>
+                </div>
+            </div>
+
+            <!-- Value Story -->
+            <div class="value-story-section">
+                <h3><i class="fas fa-book-open"></i> Executive Summary</h3>
+                <div class="value-story" id="value-story-text">
+                    <!-- Dynamically generated -->
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <button class="btn btn-outline" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Adjust Assumptions</button>
+                <div>
+                    <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save Assessment</button>
+                    <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export Report</button>
+                    <button class="btn btn-outline" onclick="navigateTo('pricing')"><i class="fas fa-tags"></i> Build Quote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PRICING & QUOTES PAGE ==================== -->
+    <div id="page-pricing" class="page">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1><i class="fas fa-tags"></i> Pricing Calculator & Quote Builder</h1>
+                <p>Configure Wrike plans and generate customer-ready quotes</p>
+            </div>
+            <div class="page-header-right">
+                <button class="btn btn-outline" onclick="resetPricing()"><i class="fas fa-redo"></i> Reset</button>
+                <button class="btn btn-accent" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> Export Quote</button>
+            </div>
+        </div>
+
+        <div class="pricing-layout">
+            <!-- Left: Configuration -->
+            <div class="pricing-config">
+                <div class="form-section">
+                    <h3><i class="fas fa-building"></i> Customer Details</h3>
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="quote-customer" placeholder="Company name">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Name</label>
+                        <input type="text" id="quote-contact" placeholder="Decision maker">
+                    </div>
+                    <div class="form-group">
+                        <label>Quote Date</label>
+                        <input type="date" id="quote-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Quote Valid Until</label>
+                        <input type="date" id="quote-valid">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-cube"></i> Plan Selection</h3>
+                    <div class="plan-cards">
+                        <div class="plan-card" data-plan="team" onclick="selectPlan('team')">
+                            <div class="plan-name">Team</div>
+                            <div class="plan-price">$10<span>/user/mo</span></div>
+                            <ul class="plan-features">
+                                <li>2-25 users</li>
+                                <li>AI Essentials</li>
+                                <li>Interactive Gantt Charts</li>
+                                <li>Board View</li>
+                                <li>Automations (50/mo)</li>
+                            </ul>
+                        </div>
+                        <div class="plan-card selected" data-plan="business" onclick="selectPlan('business')">
+                            <div class="plan-badge">Most Popular</div>
+                            <div class="plan-name">Business</div>
+                            <div class="plan-price">$25<span>/user/mo</span></div>
+                            <ul class="plan-features">
+                                <li>5-200 users</li>
+                                <li>AI Elite</li>
+                                <li>Custom Workflows</li>
+                                <li>Resource Management</li>
+                                <li>Automations (200/mo)</li>
+                                <li>Project Blueprints</li>
+                            </ul>
+                        </div>
+                        <div class="plan-card" data-plan="enterprise" onclick="selectPlan('enterprise')">
+                            <div class="plan-name">Enterprise</div>
+                            <div class="plan-price">$35<span>/user/mo</span></div>
+                            <ul class="plan-features">
+                                <li>5-unlimited users</li>
+                                <li>AI Elite</li>
+                                <li>Advanced Reporting</li>
+                                <li>SSO / SAML</li>
+                                <li>Automations (1000/mo)</li>
+                                <li>Branded Workspace</li>
+                                <li>Custom Roles</li>
+                            </ul>
+                        </div>
+                        <div class="plan-card" data-plan="pinnacle" onclick="selectPlan('pinnacle')">
+                            <div class="plan-badge">Most Powerful</div>
+                            <div class="plan-name">Pinnacle</div>
+                            <div class="plan-price">$45<span>/user/mo</span></div>
+                            <ul class="plan-features">
+                                <li>5-unlimited users</li>
+                                <li>AI Elite Advanced</li>
+                                <li>Advanced Analytics</li>
+                                <li>Budgeting & Billable Hours</li>
+                                <li>Automations (1500/mo)</li>
+                                <li>Locked Spaces</li>
+                                <li>Advanced Proofing</li>
+                                <li>Job Roles</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-users"></i> License Configuration</h3>
+                    <div class="form-grid two-col">
+                        <div class="form-group">
+                            <label>Number of Full Users</label>
+                            <input type="number" id="quote-users" value="50" min="1" onchange="updateQuote()">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Collaborators (Free)</label>
+                            <input type="number" id="quote-collaborators" value="20" min="0" onchange="updateQuote()">
+                            <span class="input-hint">External stakeholders with limited access</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Contract Term</label>
+                            <select id="quote-term" onchange="updateQuote()">
+                                <option value="annual" selected>Annual (billed yearly)</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="multi-year">Multi-Year (2+ years)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Billing Cycle</label>
+                            <select id="quote-billing" onchange="updateQuote()">
+                                <option value="annual" selected>Annual Prepay</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-puzzle-piece"></i> Add-Ons & Services</h3>
+                    <div class="addons-list">
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-wrike-lock" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Wrike Lock</strong>
+                                <span>Encryption key management — $5/user/mo</span>
+                            </div>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-integrate" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Wrike Integrate (iPaaS)</strong>
+                                <span>Advanced integrations platform — $4/user/mo</span>
+                            </div>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-publish" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Wrike Publish</strong>
+                                <span>Digital asset publishing — $8/user/mo</span>
+                            </div>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-twoway-sync" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Two-Way Sync (Salesforce/Jira)</strong>
+                                <span>Bi-directional data sync — $6/user/mo</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h4 style="margin-top:20px;">Professional Services</h4>
+                    <div class="addons-list">
+                        <label class="addon-item">
+                            <input type="checkbox" id="svc-implementation" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Implementation Package</strong>
+                                <span>Guided setup & configuration</span>
+                            </div>
+                            <select id="svc-impl-tier" onchange="updateQuote()" style="margin-left:auto; width:140px;">
+                                <option value="5000">Basic — $5,000</option>
+                                <option value="15000" selected>Standard — $15,000</option>
+                                <option value="35000">Premium — $35,000</option>
+                                <option value="75000">Enterprise — $75,000</option>
+                            </select>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="svc-training" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Training & Enablement</strong>
+                                <span>Customized training sessions</span>
+                            </div>
+                            <select id="svc-training-tier" onchange="updateQuote()" style="margin-left:auto; width:140px;">
+                                <option value="3000">Basic — $3,000</option>
+                                <option value="8000" selected>Standard — $8,000</option>
+                                <option value="20000">Premium — $20,000</option>
+                            </select>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="svc-csm" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Premium Support & CSM</strong>
+                                <span>Dedicated Customer Success Manager</span>
+                            </div>
+                            <select id="svc-csm-tier" onchange="updateQuote()" style="margin-left:auto; width:140px;">
+                                <option value="12000">Standard — $12,000/yr</option>
+                                <option value="24000" selected>Premium — $24,000/yr</option>
+                                <option value="48000">Elite — $48,000/yr</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-percent"></i> Discounts</h3>
+                    <div class="form-grid two-col">
+                        <div class="form-group">
+                            <label>Volume Discount (%)</label>
+                            <input type="number" id="quote-volume-discount" value="0" min="0" max="50" onchange="updateQuote()">
+                        </div>
+                        <div class="form-group">
+                            <label>Multi-Year Discount (%)</label>
+                            <input type="number" id="quote-multiyear-discount" value="0" min="0" max="30" onchange="updateQuote()">
+                        </div>
+                        <div class="form-group">
+                            <label>Strategic / Competitive Discount (%)</label>
+                            <input type="number" id="quote-strategic-discount" value="0" min="0" max="40" onchange="updateQuote()">
+                        </div>
+                        <div class="form-group">
+                            <label>Custom Discount Note</label>
+                            <input type="text" id="quote-discount-note" placeholder="e.g., Competitive displacement">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live Quote Preview -->
+            <div class="quote-preview">
+                <div class="quote-sticky">
+                    <div class="quote-card">
+                        <div class="quote-header">
+                            <div class="quote-logo">
+                                <svg viewBox="0 0 80 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <text x="0" y="20" font-family="Inter, sans-serif" font-weight="800" font-size="20" fill="#08CF65">Wrike</text>
+                                </svg>
+                            </div>
+                            <h3>Quote Summary</h3>
+                            <p id="quote-customer-display" class="quote-customer-name">—</p>
+                        </div>
+
+                        <div class="quote-line-items">
+                            <div class="quote-line">
+                                <span>Plan: <strong id="quote-plan-display">Business</strong></span>
+                                <span id="quote-per-user-display">$25/user/mo</span>
+                            </div>
+                            <div class="quote-line">
+                                <span>Users: <strong id="quote-users-display">50</strong></span>
+                                <span id="quote-base-display">$15,000/yr</span>
+                            </div>
+                            <div class="quote-line" id="quote-addons-line" style="display:none;">
+                                <span>Add-Ons</span>
+                                <span id="quote-addons-display">$0/yr</span>
+                            </div>
+                            <div class="quote-line" id="quote-services-line" style="display:none;">
+                                <span>Professional Services</span>
+                                <span id="quote-services-display">$0</span>
+                            </div>
+                            <div class="quote-divider"></div>
+                            <div class="quote-line subtotal">
+                                <span>Subtotal (Annual)</span>
+                                <span id="quote-subtotal-display">$15,000</span>
+                            </div>
+                            <div class="quote-line discount" id="quote-discount-line" style="display:none;">
+                                <span>Discount</span>
+                                <span id="quote-discount-display">-$0</span>
+                            </div>
+                            <div class="quote-divider"></div>
+                            <div class="quote-line total">
+                                <span>Total Annual Investment</span>
+                                <span id="quote-total-display">$15,000</span>
+                            </div>
+                            <div class="quote-line monthly">
+                                <span>Effective Monthly</span>
+                                <span id="quote-monthly-display">$1,250/mo</span>
+                            </div>
+                            <div class="quote-line per-user-effective">
+                                <span>Effective Per User / Month</span>
+                                <span id="quote-effective-per-user">$25.00</span>
+                            </div>
+                        </div>
+
+                        <div class="quote-roi-link" id="quote-roi-link" style="display:none;">
+                            <div class="quote-divider"></div>
+                            <h4>Linked ROI Analysis</h4>
+                            <div class="quote-line green">
+                                <span>Projected Annual Savings</span>
+                                <span id="quote-roi-savings">$0</span>
+                            </div>
+                            <div class="quote-line green">
+                                <span>Net Benefit</span>
+                                <span id="quote-roi-net">$0</span>
+                            </div>
+                            <div class="quote-line green">
+                                <span>ROI</span>
+                                <span id="quote-roi-pct">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="quote-footer">
+                            <button class="btn btn-primary full-width" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> Export Quote as PDF</button>
+                            <button class="btn btn-outline full-width" onclick="linkROIToQuote()" style="margin-top:8px;"><i class="fas fa-link"></i> Link ROI Analysis</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SAVED ASSESSMENTS PAGE ==================== -->
+    <div id="page-saved" class="page">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1><i class="fas fa-folder-open"></i> Saved Assessments</h1>
+                <p>Manage and revisit your ROI analyses and quotes</p>
+            </div>
+            <div class="page-header-right">
+                <button class="btn btn-outline" onclick="clearAllSaved()"><i class="fas fa-trash"></i> Clear All</button>
+            </div>
+        </div>
+        <div class="saved-list" id="saved-list">
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <h3>No saved assessments yet</h3>
+                <p>Start a new ROI analysis or build a quote to save it here</p>
+                <button class="btn btn-primary" onclick="navigateTo('roi-calculator')">Start New Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="help-modal" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Value Engineering Hub — Quick Guide</h2>
+                <button class="btn-icon" onclick="closeHelp()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <h4>🚀 Getting Started</h4>
+                <p>Choose your scenario from the dashboard: <strong>New Customer</strong>, <strong>Existing Customer ROI</strong>, or <strong>License Expansion</strong>.</p>
+
+                <h4>📊 ROI Calculator</h4>
+                <p>Walk through the 4-step wizard to capture customer context, current pain points, and expected improvements. The calculator generates a comprehensive ROI analysis with executive-ready metrics.</p>
+
+                <h4>💰 Pricing & Quotes</h4>
+                <p>Configure Wrike plans, add-ons, and professional services. Generate customer-ready quotes with volume and strategic discounts. Link your ROI analysis for a complete business case.</p>
+
+                <h4>🏢 Verticals</h4>
+                <ul>
+                    <li><strong>Product Lifecycle Management</strong> — Time-to-market, cross-functional alignment, change management</li>
+                    <li><strong>Client Service Delivery</strong> — Utilization, delivery speed, client satisfaction</li>
+                    <li><strong>Marketing</strong> — Campaign velocity, creative review cycles, brand consistency</li>
+                    <li><strong>PMO</strong> — Portfolio visibility, resource optimization, project success rates</li>
+                </ul>
+
+                <h4>💾 Saving & Exporting</h4>
+                <p>Save assessments to revisit later. Export as PDF for customer-ready deliverables. All data is stored locally in your browser.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
