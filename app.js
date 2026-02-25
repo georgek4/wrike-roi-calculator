@@ -697,6 +697,11 @@ function selectPlan(plan) {
     updateQuote();
 }
 
+function updateCustomPlanPrice(planKey, value) {
+    const price = parseFloat(value) || 0;
+    if (PLANS[planKey]) PLANS[planKey].pricePerUser = price;
+}
+
 function updateQuote() {
     const plan = PLANS[selectedPlan];
     const users = parseInt(document.getElementById('quote-users').value) || 1;
@@ -744,7 +749,7 @@ function updateQuote() {
 
     // Update display
     document.getElementById('quote-plan-display').textContent = plan.name;
-    document.getElementById('quote-per-user-display').textContent = plan.customPricing ? 'Custom/user/mo' : '$' + monthlyPerUser.toFixed(0) + '/user/mo';
+    document.getElementById('quote-per-user-display').textContent = '$' + monthlyPerUser.toFixed(0) + '/user/mo';
     document.getElementById('quote-users-display').textContent = users;
     document.getElementById('quote-base-display').textContent = formatCurrency(baseAnnual) + '/yr';
 
@@ -809,6 +814,10 @@ function resetPricing() {
     document.getElementById('quote-volume-discount').value = 0;
     document.getElementById('quote-multiyear-discount').value = 0;
     document.getElementById('quote-strategic-discount').value = 0;
+    document.getElementById('pinnacle-seat-cost').value = 25;
+    document.getElementById('apex-seat-cost').value = 25;
+    PLANS.pinnacle.pricePerUser = 25;
+    PLANS.apex.pricePerUser = 25;
     document.querySelectorAll('.addons-list input[type="checkbox"]').forEach(cb => cb.checked = false);
     selectPlan('business');
     updateQuote();
@@ -1762,6 +1771,259 @@ function exportQuotePPTX() {
     pptx.writeFile({ fileName: `${customer.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Quote.pptx` })
         .then(() => showToast('Quote PowerPoint exported!', 'success'))
         .catch(err => { console.error(err); showToast('Export failed', 'warning'); });
+}
+
+// ---- Word (DOCX) Exports ----
+function saveDocxBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function exportROIDoc() {
+    if (!roiResults) { showToast('Complete an ROI analysis first', 'warning'); return; }
+    const r = roiResults;
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, HeadingLevel, ShadingType } = docx;
+
+    const headerStyle = { bold: true, size: 28, font: 'Arial', color: '162136' };
+    const greenBold = { bold: true, color: '00E05C', font: 'Arial' };
+    const cellShade = { type: ShadingType.SOLID, color: 'F2F5FA' };
+    const noBorder = { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } };
+    const thinBorder = { bottom: { style: BorderStyle.SINGLE, size: 1, color: 'DDDDDD' } };
+
+    function kpiCell(label, value) {
+        return new TableCell({
+            children: [
+                new Paragraph({ children: [new TextRun({ text: label, size: 16, color: '657594', font: 'Arial', bold: true, allCaps: true })], spacing: { after: 40 } }),
+                new Paragraph({ children: [new TextRun({ text: value, size: 36, ...greenBold })], alignment: AlignmentType.CENTER }),
+            ],
+            shading: cellShade, width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorder,
+        });
+    }
+
+    const prodRows = r.productivityItems.map(i => new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: i.label, size: 20, font: 'Arial' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: i.currentHours.toFixed(1), size: 20, font: 'Arial' })], alignment: AlignmentType.CENTER })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: i.hoursSaved.toFixed(1), size: 20, font: 'Arial' })], alignment: AlignmentType.CENTER })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatCurrency(i.annualSavings), size: 20, ...greenBold })], alignment: AlignmentType.RIGHT })], borders: thinBorder }),
+        ]
+    }));
+
+    const doc = new Document({
+        sections: [{
+            children: [
+                new Paragraph({ children: [new TextRun({ text: 'Wrike', ...greenBold, size: 32 }), new TextRun({ text: ' — Value Engineering', size: 24, color: '657594', font: 'Arial' })], spacing: { after: 100 } }),
+                new Paragraph({ children: [new TextRun({ text: 'Business Case Analysis', ...headerStyle })], spacing: { after: 50 } }),
+                new Paragraph({ children: [new TextRun({ text: `${r.verticalName}  |  ${r.company}  |  ${r.date}`, size: 20, color: '657594', font: 'Arial' })], spacing: { after: 300 } }),
+
+                new Table({ rows: [new TableRow({ children: [
+                    kpiCell('Annual Savings', formatCurrency(r.totalAnnualSavings)),
+                    kpiCell('Investment', formatCurrency(r.annualInvestment)),
+                    kpiCell('Net Benefit', formatCurrency(r.netBenefit)),
+                    kpiCell('Payback', r.paybackMonths + ' months'),
+                ] })], width: { size: 100, type: WidthType.PERCENTAGE } }),
+
+                new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }),
+                new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: 'Productivity Savings', size: 26, bold: true, font: 'Arial', color: '162136' })], spacing: { after: 100 } }),
+
+                new Table({
+                    rows: [
+                        new TableRow({ children: ['Activity', 'Current (hrs/wk)', 'Saved (hrs/wk)', 'Annual Savings'].map(h =>
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h, size: 18, bold: true, font: 'Arial' })], alignment: h === 'Activity' ? AlignmentType.LEFT : AlignmentType.CENTER })], shading: cellShade, borders: thinBorder })
+                        ) }),
+                        ...prodRows,
+                    ],
+                    width: { size: 100, type: WidthType.PERCENTAGE }
+                }),
+
+                new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }),
+                new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: 'Executive Summary', size: 26, bold: true, font: 'Arial', color: '162136' })], spacing: { after: 100 } }),
+                new Paragraph({ children: [new TextRun({ text: generateValueStory(r).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(), size: 20, font: 'Arial', color: '333333' })], spacing: { after: 200 } }),
+
+                new Paragraph({ children: [new TextRun({ text: `Confidential — Wrike Value Engineering  |  ${new Date().toLocaleDateString()}`, size: 16, color: '999999', font: 'Arial', italics: true })], alignment: AlignmentType.CENTER }),
+            ]
+        }]
+    });
+
+    Packer.toBlob(doc).then(blob => {
+        saveDocxBlob(blob, `${r.company.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Business_Case.docx`);
+        showToast('Word document exported!', 'success');
+    }).catch(err => { console.error(err); showToast('Export failed', 'warning'); });
+}
+
+function exportAIAgentDoc() {
+    const data = getEventRowData();
+    if (data.length === 0) { showToast('Add at least one event before exporting', 'warning'); return; }
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, HeadingLevel, ShadingType } = docx;
+
+    const hourlyRate = parseFloat(document.getElementById('ai-hourly-rate').value) || 50;
+    const plan = document.getElementById('ai-plan-type').value;
+    const numUsers = parseInt(document.getElementById('ai-num-users').value) || 1;
+    const unitsPerUser = PLAN_UNITS_MAP[plan] || 10;
+
+    let totalHours = 0, totalValue = 0, totalActions = 0;
+    const rows = data.map(row => {
+        const hrs = (row.minSaved / 60) * row.eventsPerMonth * 12;
+        const val = hrs * row.rate;
+        const acts = row.actions * row.eventsPerMonth;
+        totalHours += hrs; totalValue += val; totalActions += acts;
+        return { ...row, hoursSaved: hrs, annualValue: val, monthlyActions: acts };
+    });
+    const monthlyAllotted = numUsers * unitsPerUser;
+    const excess = Math.max(0, (totalActions - monthlyAllotted) * 12);
+    const spend = Math.ceil(excess / 10000) * 1000;
+    const net = totalValue - spend;
+
+    const greenBold = { bold: true, color: '00E05C', font: 'Arial' };
+    const cellShade = { type: ShadingType.SOLID, color: 'F2F5FA' };
+    const thinBorder = { bottom: { style: BorderStyle.SINGLE, size: 1, color: 'DDDDDD' } };
+    const noBorder = { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } };
+
+    const eventRows = rows.map(r => new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: r.label, size: 18, font: 'Arial' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: r.team || '', size: 18, font: 'Arial', color: '657594' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(r.eventsPerMonth), size: 18, font: 'Arial' })], alignment: AlignmentType.CENTER })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(r.minSaved), size: 18, font: 'Arial' })], alignment: AlignmentType.CENTER })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(Math.round(r.hoursSaved)), size: 18, ...greenBold })], alignment: AlignmentType.CENTER })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatCurrency(r.annualValue), size: 18, ...greenBold })], alignment: AlignmentType.RIGHT })], borders: thinBorder }),
+        ]
+    }));
+
+    function kpiCell(label, value) {
+        return new TableCell({
+            children: [
+                new Paragraph({ children: [new TextRun({ text: label, size: 16, color: '657594', font: 'Arial', bold: true, allCaps: true })], spacing: { after: 40 } }),
+                new Paragraph({ children: [new TextRun({ text: value, size: 36, ...greenBold })], alignment: AlignmentType.CENTER }),
+            ], shading: cellShade, width: { size: 25, type: WidthType.PERCENTAGE }, borders: noBorder,
+        });
+    }
+
+    const doc = new Document({
+        sections: [{
+            children: [
+                new Paragraph({ children: [new TextRun({ text: 'Wrike', ...greenBold, size: 32 }), new TextRun({ text: ' — AI Agent Time Savings', size: 24, color: '657594', font: 'Arial' })], spacing: { after: 100 } }),
+                new Paragraph({ children: [new TextRun({ text: `Plan: ${plan}  |  ${numUsers} Users  |  $${hourlyRate}/hr  |  ${new Date().toLocaleDateString()}`, size: 20, color: '657594', font: 'Arial' })], spacing: { after: 300 } }),
+
+                new Table({ rows: [new TableRow({ children: [
+                    kpiCell('Hours Saved', Math.round(totalHours).toLocaleString()),
+                    kpiCell('Annual Value', formatCurrency(totalValue)),
+                    kpiCell('Working Days', String(Math.round(totalHours / 8))),
+                    kpiCell('FTE Equivalent', (totalHours / 2080).toFixed(1)),
+                ] })], width: { size: 100, type: WidthType.PERCENTAGE } }),
+
+                new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }),
+                new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: 'Event Breakdown', size: 26, bold: true, font: 'Arial', color: '162136' })], spacing: { after: 100 } }),
+
+                new Table({
+                    rows: [
+                        new TableRow({ children: ['Event', 'Team', 'Evt/Mo', 'Min Saved', 'Hrs/Yr', 'Value'].map(h =>
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h, size: 16, bold: true, font: 'Arial' })], alignment: AlignmentType.CENTER })], shading: cellShade, borders: thinBorder })
+                        ) }),
+                        ...eventRows,
+                    ],
+                    width: { size: 100, type: WidthType.PERCENTAGE }
+                }),
+
+                new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }),
+                new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: 'Consumption & ROI', size: 26, bold: true, font: 'Arial', color: '162136' })], spacing: { after: 100 } }),
+                new Paragraph({ children: [new TextRun({ text: `Monthly Actions Required: ${Math.round(totalActions).toLocaleString()}  |  Monthly Allotted (${plan}): ${monthlyAllotted.toLocaleString()}`, size: 20, font: 'Arial' })], spacing: { after: 80 } }),
+                new Paragraph({ children: [new TextRun({ text: `Est. Annual Overage Spend: ${formatCurrency(spend)}  |  Net Annual Value: `, size: 20, font: 'Arial' }), new TextRun({ text: formatCurrency(net), size: 24, ...greenBold })], spacing: { after: 200 } }),
+
+                new Paragraph({ children: [new TextRun({ text: `Confidential — Wrike Value Engineering  |  ${new Date().toLocaleDateString()}`, size: 16, color: '999999', font: 'Arial', italics: true })], alignment: AlignmentType.CENTER }),
+            ]
+        }]
+    });
+
+    Packer.toBlob(doc).then(blob => {
+        saveDocxBlob(blob, 'Wrike_AI_Agent_Time_Savings.docx');
+        showToast('Word document exported!', 'success');
+    }).catch(err => { console.error(err); showToast('Export failed', 'warning'); });
+}
+
+function exportQuoteDoc() {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, HeadingLevel, ShadingType } = docx;
+
+    const plan = PLANS[selectedPlan];
+    const customer = document.getElementById('quote-customer').value || 'Customer';
+    const contact = document.getElementById('quote-contact').value || '';
+    const users = document.getElementById('quote-users').value;
+    const total = document.getElementById('quote-total-display').textContent;
+    const monthly = document.getElementById('quote-monthly-display').textContent;
+    const perUser = document.getElementById('quote-effective-per-user').textContent;
+
+    const greenBold = { bold: true, color: '00E05C', font: 'Arial' };
+    const cellShade = { type: ShadingType.SOLID, color: 'F2F5FA' };
+    const thinBorder = { bottom: { style: BorderStyle.SINGLE, size: 1, color: 'DDDDDD' } };
+
+    const lineItems = [
+        ['Plan', `${plan.name} — $${plan.pricePerUser}/user/mo`],
+        ['Licensed Users', users],
+        ['Base License', document.getElementById('quote-base-display').textContent],
+    ];
+    if (document.getElementById('quote-addons-line').style.display !== 'none')
+        lineItems.push(['Add-Ons', document.getElementById('quote-addons-display').textContent]);
+    if (document.getElementById('quote-services-line').style.display !== 'none')
+        lineItems.push(['Professional Services', document.getElementById('quote-services-display').textContent]);
+    if (document.getElementById('quote-discount-line').style.display !== 'none')
+        lineItems.push(['Discount', document.getElementById('quote-discount-display').textContent]);
+
+    const tableRows = lineItems.map(([label, value]) => new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: label, size: 22, font: 'Arial' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: value, size: 22, font: 'Arial' })], alignment: AlignmentType.RIGHT })], borders: thinBorder }),
+        ]
+    }));
+    tableRows.push(new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Total Annual Investment', size: 24, bold: true, font: 'Arial' })] })], shading: cellShade, borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: total, size: 24, ...greenBold })], alignment: AlignmentType.RIGHT })], shading: cellShade, borders: thinBorder }),
+        ]
+    }));
+    tableRows.push(new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Effective Monthly', size: 20, font: 'Arial', color: '657594' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: monthly, size: 20, font: 'Arial', color: '657594' })], alignment: AlignmentType.RIGHT })], borders: thinBorder }),
+        ]
+    }));
+    tableRows.push(new TableRow({
+        children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Per User / Month', size: 20, font: 'Arial', color: '657594' })] })], borders: thinBorder }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: perUser, size: 20, font: 'Arial', color: '657594' })], alignment: AlignmentType.RIGHT })], borders: thinBorder }),
+        ]
+    }));
+
+    const children = [
+        new Paragraph({ children: [new TextRun({ text: 'Wrike', ...greenBold, size: 32 }), new TextRun({ text: ' — Pricing Quote', size: 24, color: '657594', font: 'Arial' })], spacing: { after: 100 } }),
+        new Paragraph({ children: [new TextRun({ text: `Customer: ${customer}`, size: 22, bold: true, font: 'Arial' }), new TextRun({ text: contact ? `  |  Contact: ${contact}` : '', size: 20, font: 'Arial', color: '657594' })], spacing: { after: 50 } }),
+        new Paragraph({ children: [new TextRun({ text: new Date().toLocaleDateString(), size: 20, color: '657594', font: 'Arial' })], spacing: { after: 300 } }),
+
+        new Table({ rows: tableRows, width: { size: 100, type: WidthType.PERCENTAGE } }),
+    ];
+
+    if (roiResults) {
+        children.push(new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }));
+        children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: 'Linked Value Analysis', size: 26, bold: true, font: 'Arial', color: '162136' })], spacing: { after: 100 } }));
+        children.push(new Paragraph({ children: [
+            new TextRun({ text: `Annual Savings: ${formatCurrency(roiResults.totalAnnualSavings)}  |  Net Benefit: ${formatCurrency(roiResults.netBenefit)}  |  Payback: ${roiResults.paybackMonths} months`, size: 20, font: 'Arial' })
+        ], spacing: { after: 200 } }));
+    }
+
+    children.push(new Paragraph({ children: [new TextRun({ text: '' })], spacing: { after: 200 } }));
+    children.push(new Paragraph({ children: [new TextRun({ text: 'This quote is valid for 30 days. Confidential — Wrike Value Engineering', size: 16, color: '999999', font: 'Arial', italics: true })], alignment: AlignmentType.CENTER }));
+
+    const doc = new Document({ sections: [{ children }] });
+
+    Packer.toBlob(doc).then(blob => {
+        saveDocxBlob(blob, `${customer.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Quote.docx`);
+        showToast('Word document exported!', 'success');
+    }).catch(err => { console.error(err); showToast('Export failed', 'warning'); });
 }
 
 // ---- AI Agent ROI Calculator ----

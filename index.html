@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 </head>
 <body>
     <!-- Top Navigation Bar -->
@@ -135,6 +136,7 @@
                 <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save</button>
                 <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
                 <button class="btn btn-pptx" onclick="exportROIPPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
+                <button class="btn btn-doc" onclick="exportROIDoc()"><i class="fas fa-file-word"></i> Word</button>
             </div>
         </div>
 
@@ -466,6 +468,7 @@
                     <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save Assessment</button>
                     <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
                     <button class="btn btn-pptx" onclick="exportROIPPTX()"><i class="fas fa-file-powerpoint"></i> Export PowerPoint</button>
+                    <button class="btn btn-doc" onclick="exportROIDoc()"><i class="fas fa-file-word"></i> Export Word</button>
                     <button class="btn btn-outline" onclick="navigateTo('pricing')"><i class="fas fa-tags"></i> Build Quote</button>
                 </div>
             </div>
@@ -483,6 +486,7 @@
                 <button class="btn btn-outline" onclick="resetAICalculator()"><i class="fas fa-redo"></i> Reset</button>
                 <button class="btn btn-accent" onclick="exportAIAgentPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
                 <button class="btn btn-pptx" onclick="exportAIAgentPPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
+                <button class="btn btn-doc" onclick="exportAIAgentDoc()"><i class="fas fa-file-word"></i> Word</button>
             </div>
         </div>
 
@@ -661,6 +665,7 @@
                 <button class="btn btn-outline" onclick="resetPricing()"><i class="fas fa-redo"></i> Reset</button>
                 <button class="btn btn-accent" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> PDF</button>
                 <button class="btn btn-pptx" onclick="exportQuotePPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
+                <button class="btn btn-doc" onclick="exportQuoteDoc()"><i class="fas fa-file-word"></i> Word</button>
             </div>
         </div>
 
@@ -726,7 +731,9 @@
                         </div>
                         <div class="plan-card" data-plan="pinnacle" onclick="selectPlan('pinnacle')">
                             <div class="plan-name">Pinnacle</div>
-                            <div class="plan-price">Custom<span> pricing</span></div>
+                            <div class="plan-price-input">
+                                <span>$</span><input type="number" id="pinnacle-seat-cost" value="25" min="0" step="1" onclick="event.stopPropagation()" onchange="updateCustomPlanPrice('pinnacle', this.value); updateQuote()"><span>/user/mo</span>
+                            </div>
                             <ul class="plan-features">
                                 <li>5-unlimited users</li>
                                 <li>Advanced Resource Planning</li>
@@ -740,7 +747,9 @@
                         <div class="plan-card" data-plan="apex" onclick="selectPlan('apex')">
                             <div class="plan-badge">Most Powerful</div>
                             <div class="plan-name">Apex</div>
-                            <div class="plan-price">Custom<span> pricing</span></div>
+                            <div class="plan-price-input">
+                                <span>$</span><input type="number" id="apex-seat-cost" value="25" min="0" step="1" onclick="event.stopPropagation()" onchange="updateCustomPlanPrice('apex', this.value); updateQuote()"><span>/user/mo</span>
+                            </div>
                             <ul class="plan-features">
                                 <li>5-unlimited users</li>
                                 <li>Generous AI Elite Package</li>
@@ -962,7 +971,11 @@
                         </div>
 
                         <div class="quote-footer">
-                            <button class="btn btn-primary full-width" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> Export Quote as PDF</button>
+                            <div class="quote-export-btns">
+                                <button class="btn btn-primary" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                                <button class="btn btn-pptx" onclick="exportQuotePPTX()"><i class="fas fa-file-powerpoint"></i> PPTX</button>
+                                <button class="btn btn-doc" onclick="exportQuoteDoc()"><i class="fas fa-file-word"></i> Word</button>
+                            </div>
                             <button class="btn btn-outline full-width" onclick="linkROIToQuote()" style="margin-top:8px;"><i class="fas fa-link"></i> Link ROI Analysis</button>
                         </div>
                     </div>

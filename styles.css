@@ -986,6 +986,43 @@ body {
     color: var(--text-muted);
 }
 
+.plan-price-input {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--wrike-green);
+}
+.plan-price-input span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+.plan-price-input span:first-child {
+    font-size: 18px;
+    color: var(--wrike-green);
+    font-weight: 800;
+}
+.plan-price-input input {
+    width: 60px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--wrike-green);
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 4px;
+    font-family: inherit;
+}
+.plan-price-input input:focus {
+    outline: none;
+    border-color: var(--wrike-green);
+    box-shadow: 0 0 0 2px rgba(8, 207, 101, 0.15);
+}
+
 .plan-features {
     list-style: none;
     text-align: left;
@@ -1162,6 +1199,15 @@ body {
 .quote-footer {
     padding: 16px 24px 24px;
     border-top: 1px solid var(--border-color);
+}
+.quote-export-btns {
+    display: flex;
+    gap: 6px;
+}
+.quote-export-btns .btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px 6px;
 }
 
 /* ---- Saved Assessments ---- */
@@ -1553,9 +1599,15 @@ canvas {
     background: #D24726;
     color: #fff;
 }
-
 .btn-pptx:hover {
     background: #B83D1F;
+}
+.btn-doc {
+    background: #2B579A;
+    color: #fff;
+}
+.btn-doc:hover {
+    background: #1E3F6F;
 }
 
 /* ---- Enhanced Value Story / Executive Summary ---- */
