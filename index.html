@@ -237,10 +237,11 @@
                         <div class="form-group">
                             <label>Current Wrike Plan</label>
                             <select id="roi-current-plan">
+                                <option value="free">Free</option>
                                 <option value="team">Team</option>
                                 <option value="business" selected>Business</option>
-                                <option value="enterprise">Enterprise</option>
                                 <option value="pinnacle">Pinnacle</option>
+                                <option value="apex">Apex</option>
                             </select>
                         </div>
                     </div>
@@ -480,6 +481,8 @@
             </div>
             <div class="page-header-right">
                 <button class="btn btn-outline" onclick="resetAICalculator()"><i class="fas fa-redo"></i> Reset</button>
+                <button class="btn btn-accent" onclick="exportAIAgentPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="btn btn-pptx" onclick="exportAIAgentPPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
             </div>
         </div>
 
@@ -656,7 +659,8 @@
             </div>
             <div class="page-header-right">
                 <button class="btn btn-outline" onclick="resetPricing()"><i class="fas fa-redo"></i> Reset</button>
-                <button class="btn btn-accent" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> Export Quote</button>
+                <button class="btn btn-accent" onclick="exportQuotePDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="btn btn-pptx" onclick="exportQuotePPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
             </div>
         </div>
 
@@ -686,15 +690,25 @@
                 <div class="form-section">
                     <h3><i class="fas fa-cube"></i> Plan Selection</h3>
                     <div class="plan-cards">
+                        <div class="plan-card" data-plan="free" onclick="selectPlan('free')">
+                            <div class="plan-name">Free</div>
+                            <div class="plan-price">$0<span>/user/mo</span></div>
+                            <ul class="plan-features">
+                                <li>Unlimited users</li>
+                                <li>Web, Desktop & Mobile</li>
+                                <li>Project & Task Management</li>
+                                <li>Board & Table Views</li>
+                            </ul>
+                        </div>
                         <div class="plan-card" data-plan="team" onclick="selectPlan('team')">
                             <div class="plan-name">Team</div>
                             <div class="plan-price">$10<span>/user/mo</span></div>
                             <ul class="plan-features">
-                                <li>2-25 users</li>
+                                <li>2-15 users</li>
                                 <li>AI Essentials</li>
                                 <li>Interactive Gantt Charts</li>
-                                <li>Board View</li>
-                                <li>Automations (50/mo)</li>
+                                <li>Custom Fields & Workflows</li>
+                                <li>Shareable Dashboards</li>
                             </ul>
                         </div>
                         <div class="plan-card selected" data-plan="business" onclick="selectPlan('business')">
@@ -703,39 +717,38 @@
                             <div class="plan-price">$25<span>/user/mo</span></div>
                             <ul class="plan-features">
                                 <li>5-200 users</li>
-                                <li>AI Elite</li>
+                                <li>AI Elite (Agents incl.)</li>
                                 <li>Custom Workflows</li>
-                                <li>Resource Management</li>
-                                <li>Automations (200/mo)</li>
-                                <li>Project Blueprints</li>
-                            </ul>
-                        </div>
-                        <div class="plan-card" data-plan="enterprise" onclick="selectPlan('enterprise')">
-                            <div class="plan-name">Enterprise</div>
-                            <div class="plan-price">$35<span>/user/mo</span></div>
-                            <ul class="plan-features">
-                                <li>5-unlimited users</li>
-                                <li>AI Elite</li>
-                                <li>Advanced Reporting</li>
-                                <li>SSO / SAML</li>
-                                <li>Automations (1000/mo)</li>
-                                <li>Branded Workspace</li>
-                                <li>Custom Roles</li>
+                                <li>Resource & Capacity Planning</li>
+                                <li>Standard Integrations</li>
+                                <li>Templatize Work</li>
                             </ul>
                         </div>
                         <div class="plan-card" data-plan="pinnacle" onclick="selectPlan('pinnacle')">
-                            <div class="plan-badge">Most Powerful</div>
                             <div class="plan-name">Pinnacle</div>
-                            <div class="plan-price">$45<span>/user/mo</span></div>
+                            <div class="plan-price">Custom<span> pricing</span></div>
                             <ul class="plan-features">
                                 <li>5-unlimited users</li>
-                                <li>AI Elite Advanced</li>
-                                <li>Advanced Analytics</li>
+                                <li>Advanced Resource Planning</li>
                                 <li>Budgeting & Billable Hours</li>
-                                <li>Automations (1500/mo)</li>
-                                <li>Locked Spaces</li>
-                                <li>Advanced Proofing</li>
-                                <li>Job Roles</li>
+                                <li>Advanced Reporting & BI</li>
+                                <li>SSO</li>
+                                <li>Advanced Security</li>
+                                <li>Wrike Datahub (10K)</li>
+                            </ul>
+                        </div>
+                        <div class="plan-card" data-plan="apex" onclick="selectPlan('apex')">
+                            <div class="plan-badge">Most Powerful</div>
+                            <div class="plan-name">Apex</div>
+                            <div class="plan-price">Custom<span> pricing</span></div>
+                            <ul class="plan-features">
+                                <li>5-unlimited users</li>
+                                <li>Generous AI Elite Package</li>
+                                <li>AI Agents (100 units/user)</li>
+                                <li>Unlimited Whiteboards</li>
+                                <li>Wrike Integrate included</li>
+                                <li>Wrike Sync included</li>
+                                <li>Wrike Datahub (30M)</li>
                             </ul>
                         </div>
                     </div>
@@ -775,31 +788,38 @@
                     <h3><i class="fas fa-puzzle-piece"></i> Add-Ons & Services</h3>
                     <div class="addons-list">
                         <label class="addon-item">
-                            <input type="checkbox" id="addon-wrike-lock" onchange="updateQuote()">
+                            <input type="checkbox" id="addon-whiteboard" onchange="updateQuote()">
                             <div class="addon-info">
-                                <strong>Wrike Lock</strong>
-                                <span>Encryption key management — $5/user/mo</span>
+                                <strong>Wrike Whiteboard</strong>
+                                <span>Brainstorming & visualization — $15/user/mo</span>
                             </div>
                         </label>
                         <label class="addon-item">
                             <input type="checkbox" id="addon-integrate" onchange="updateQuote()">
                             <div class="addon-info">
                                 <strong>Wrike Integrate (iPaaS)</strong>
-                                <span>Advanced integrations platform — $4/user/mo</span>
-                            </div>
-                        </label>
-                        <label class="addon-item">
-                            <input type="checkbox" id="addon-publish" onchange="updateQuote()">
-                            <div class="addon-info">
-                                <strong>Wrike Publish</strong>
-                                <span>Digital asset publishing — $8/user/mo</span>
+                                <span>No-code automation platform — Custom pricing</span>
                             </div>
                         </label>
                         <label class="addon-item">
                             <input type="checkbox" id="addon-twoway-sync" onchange="updateQuote()">
                             <div class="addon-info">
-                                <strong>Two-Way Sync (Salesforce/Jira)</strong>
-                                <span>Bi-directional data sync — $6/user/mo</span>
+                                <strong>Wrike Two-Way Sync</strong>
+                                <span>Bi-directional sync (Jira, GitHub, etc.) — Custom pricing</span>
+                            </div>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-datahub" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Wrike Datahub</strong>
+                                <span>Data connection & reporting — Custom pricing</span>
+                            </div>
+                        </label>
+                        <label class="addon-item">
+                            <input type="checkbox" id="addon-wrike-lock" onchange="updateQuote()">
+                            <div class="addon-info">
+                                <strong>Wrike Lock</strong>
+                                <span>Encryption key management — Custom pricing</span>
                             </div>
                         </label>
                     </div>

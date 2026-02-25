@@ -100,17 +100,19 @@ const INDUSTRY_BENCHMARKS = {
 
 // ---- Pricing Configuration ----
 const PLANS = {
-    team: { name: 'Team', pricePerUser: 10, minUsers: 2, maxUsers: 25 },
+    free: { name: 'Free', pricePerUser: 0, minUsers: 1, maxUsers: 9999 },
+    team: { name: 'Team', pricePerUser: 10, minUsers: 2, maxUsers: 15 },
     business: { name: 'Business', pricePerUser: 25, minUsers: 5, maxUsers: 200 },
-    enterprise: { name: 'Enterprise', pricePerUser: 35, minUsers: 5, maxUsers: 9999 },
-    pinnacle: { name: 'Pinnacle', pricePerUser: 45, minUsers: 5, maxUsers: 9999 }
+    pinnacle: { name: 'Pinnacle', pricePerUser: 25, minUsers: 5, maxUsers: 9999, customPricing: true },
+    apex: { name: 'Apex', pricePerUser: 25, minUsers: 5, maxUsers: 9999, customPricing: true }
 };
 
 const ADDONS = {
-    'addon-wrike-lock': { name: 'Wrike Lock', pricePerUser: 5 },
-    'addon-integrate': { name: 'Wrike Integrate', pricePerUser: 4 },
-    'addon-publish': { name: 'Wrike Publish', pricePerUser: 8 },
-    'addon-twoway-sync': { name: 'Two-Way Sync', pricePerUser: 6 }
+    'addon-whiteboard': { name: 'Wrike Whiteboard', pricePerUser: 15 },
+    'addon-integrate': { name: 'Wrike Integrate', pricePerUser: 5 },
+    'addon-twoway-sync': { name: 'Wrike Two-Way Sync', pricePerUser: 5 },
+    'addon-datahub': { name: 'Wrike Datahub', pricePerUser: 5 },
+    'addon-wrike-lock': { name: 'Wrike Lock', pricePerUser: 5 }
 };
 
 // ---- State ----
@@ -360,14 +362,13 @@ function getAverageImprovement(vertical) {
 }
 
 function estimateWrikeInvestment(users) {
-    // Smart plan recommendation based on user count
     let plan;
-    if (users <= 25) plan = 'business';
+    if (users <= 15) plan = 'team';
     else if (users <= 200) plan = 'business';
-    else plan = 'enterprise';
+    else plan = 'pinnacle';
 
     const price = PLANS[plan].pricePerUser;
-    return users * price * 12; // Annual
+    return users * price * 12;
 }
 
 // ---- Render Results ----
@@ -743,7 +744,7 @@ function updateQuote() {
 
     // Update display
     document.getElementById('quote-plan-display').textContent = plan.name;
-    document.getElementById('quote-per-user-display').textContent = '$' + monthlyPerUser.toFixed(0) + '/user/mo';
+    document.getElementById('quote-per-user-display').textContent = plan.customPricing ? 'Custom/user/mo' : '$' + monthlyPerUser.toFixed(0) + '/user/mo';
     document.getElementById('quote-users-display').textContent = users;
     document.getElementById('quote-base-display').textContent = formatCurrency(baseAnnual) + '/yr';
 
@@ -1459,6 +1460,308 @@ function exportROIPDFDirect() {
     printWindow.document.write(generatePDFHTML(r, 'roi'));
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 500);
+}
+
+// ---- AI Agent PDF Export ----
+function exportAIAgentPDF() {
+    const data = getEventRowData();
+    if (data.length === 0) {
+        showToast('Add at least one event before exporting', 'warning');
+        return;
+    }
+    const hourlyRate = parseFloat(document.getElementById('ai-hourly-rate').value) || 50;
+    const plan = document.getElementById('ai-plan-type').value;
+    const numUsers = parseInt(document.getElementById('ai-num-users').value) || 1;
+    const unitsPerUser = PLAN_UNITS_MAP[plan] || 10;
+
+    let totalHours = 0, totalValue = 0, totalActions = 0;
+    const rows = data.map(row => {
+        const hrs = (row.minSaved / 60) * row.eventsPerMonth * 12;
+        const val = hrs * row.rate;
+        const acts = row.actions * row.eventsPerMonth;
+        totalHours += hrs; totalValue += val; totalActions += acts;
+        return { ...row, hoursSaved: hrs, annualValue: val, monthlyActions: acts };
+    });
+    const monthlyAllotted = numUsers * unitsPerUser;
+    const excess = Math.max(0, (totalActions - monthlyAllotted) * 12);
+    const spend = Math.ceil(excess / 10000) * 1000;
+    const net = totalValue - spend;
+
+    const wrikeLogo = '<svg width="90" height="44" viewBox="0 0 124 60" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path d="M66.2113 35.0665H69.7493V29.6051C69.7493 26.3051 72.6847 26.363 74.2204 26.6139V22.8893C71.7711 22.6771 70.3131 23.3525 69.6521 24.6648H69.5744L69.5938 22.9472H66.1919V35.0667H66.2113Z" fill="#162136"/><path d="M84.562 35.0667H86.7781L90.4328 30.493L93.5237 35.0667H97.6448L92.785 28.0421L97.0422 22.9281H92.9405L88.0806 29.0263H88.0028L88.0417 16.8684H84.562V35.0667Z" fill="#162136"/><path d="M44.614 35.0666H47.355L51.5539 27.2701L55.6168 35.0666H58.3967L64.6368 22.928H60.4961L56.6665 30.6666L53.0313 22.928H50.0571L46.2275 30.7052L42.5923 22.928H38.4517L44.614 35.0666Z" fill="#162136"/><path d="M78.9443 21.1912C80.1468 21.1912 81.1216 20.2235 81.1216 19.0298C81.1216 17.8361 80.1468 16.8684 78.9443 16.8684C77.7419 16.8684 76.7671 17.8361 76.7671 19.0298C76.7671 20.2235 77.7419 21.1912 78.9443 21.1912Z" fill="#162136"/><path d="M80.694 22.928H77.1948V35.0666H80.694V22.928Z" fill="#162136"/><path d="M8.20331 23.9702C9.89456 23.9702 10.6916 24.279 11.9163 25.4948L18.4869 32.0176C18.6812 32.2106 18.7201 32.2878 18.759 32.4035C18.7784 32.4421 18.7784 32.5 18.7784 32.5386C18.7784 32.5772 18.7784 32.6351 18.759 32.6737C18.7201 32.7895 18.6812 32.8667 18.4869 33.0597L13.9963 37.5369C13.8019 37.7299 13.7242 37.7685 13.6075 37.8071C13.5686 37.8264 13.5103 37.8264 13.4714 37.8264C13.4326 37.8264 13.3742 37.8264 13.3354 37.8071C13.2187 37.7685 13.141 37.7299 12.9466 37.5369L0.213646 24.8965C-0.155706 24.5299 -0.0196293 23.9702 0.602437 23.9702H8.20331Z" fill="#00E05C"/><path d="M26.749 16C25.0577 16 24.2607 16.3088 23.036 17.5246L16.4654 24.0474C16.271 24.2404 16.2321 24.3176 16.1933 24.4333C16.1738 24.4719 16.1738 24.5298 16.1738 24.5684C16.1738 24.607 16.1738 24.6649 16.1933 24.7035C16.2321 24.8193 16.271 24.8965 16.4654 25.0895L20.956 29.5474C21.1504 29.7404 21.2281 29.779 21.3448 29.8176C21.3836 29.8369 21.442 29.8369 21.4808 29.8369C21.5197 29.8369 21.578 29.8369 21.6169 29.8176C21.7335 29.779 21.8113 29.7404 22.0057 29.5474L34.7386 16.907C35.108 16.5404 34.9719 15.9807 34.3498 15.9807H26.749V16Z" fill="#00E05C"/><path d="M107.579 31.0334C107.151 31.6702 106.257 32.4614 104.76 32.4614C103.01 32.4614 101.766 31.4579 101.494 30.0106H111C111 29.7597 111 29.393 111 29.0456C111 25.5334 108.453 22.7158 104.682 22.7158C100.988 22.7158 98.1309 25.4948 98.1309 29.0456C98.1309 32.5772 100.93 35.3755 104.682 35.3755C107.481 35.3755 109.173 34.2755 110.261 32.8667L107.579 31.0334ZM104.488 25.4369C106.101 25.4369 107.229 26.3246 107.617 27.5983H101.338C101.727 26.3246 102.835 25.4369 104.488 25.4369Z" fill="#162136"/></g><defs><clipPath id="clip0"><rect width="111" height="22" fill="white" transform="translate(0 16)"/></clipPath></defs></svg>';
+    const html = `<!DOCTYPE html><html><head><title>Wrike AI Agent — Time Savings</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Helvetica Neue',Arial,sans-serif; color:#162136; padding:40px; line-height:1.6; }
+        .header { display:flex; justify-content:space-between; align-items:center; padding-bottom:20px; }
+        .header-accent { height:3px; background:#00E05C; margin-bottom:30px; }
+        .logo-block { display:flex; flex-direction:column; }
+        .logo-subtitle { font-size:12px; color:#657594; margin-top:4px; letter-spacing:0.5px; text-transform:uppercase; }
+        .title { font-size:22px; font-weight:700; }
+        .subtitle { font-size:14px; color:#657594; }
+        .meta { display:flex; gap:30px; margin-bottom:24px; }
+        .meta-item { font-size:13px; }
+        .meta-item strong { display:block; color:#2B3A57; }
+        .kpi-row { display:flex; gap:16px; margin-bottom:24px; }
+        .kpi { flex:1; background:#F2F5FA; border-radius:8px; padding:16px; text-align:center; }
+        .kpi-label { font-size:11px; text-transform:uppercase; color:#657594; display:block; }
+        .kpi-value { font-size:24px; font-weight:700; }
+        .kpi.green .kpi-value { color:#00E05C; }
+        .kpi.blue .kpi-value { color:#6366F1; }
+        .section { margin-bottom:24px; }
+        .section h3 { font-size:16px; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:12px; }
+        table { width:100%; border-collapse:collapse; font-size:12px; }
+        th { background:#F2F5FA; padding:8px 10px; text-align:left; font-weight:600; }
+        td { padding:8px 10px; border-bottom:1px solid #eee; }
+        .total-row td { font-weight:700; background:#F2F5FA; }
+        .cons-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+        .cons-box { background:#F2F5FA; border-radius:8px; padding:14px; }
+        .cons-label { font-size:11px; color:#657594; text-transform:uppercase; display:block; }
+        .cons-val { font-size:18px; font-weight:700; color:#162136; display:block; margin-top:2px; }
+        .cons-val.green { color:#00E05C; }
+        .footer { margin-top:40px; padding-top:20px; border-top:1px solid #eee; font-size:11px; color:#657594; text-align:center; }
+        @media print { body { padding:20px; } }
+    </style></head><body>
+    <div class="header">
+        <div class="logo-block">${wrikeLogo}<span class="logo-subtitle">AI Agent Time Savings</span></div>
+        <div style="text-align:right;"><div class="title">AI Agent Value Analysis</div><div class="subtitle">${new Date().toLocaleDateString()}</div></div>
+    </div>
+    <div class="header-accent"></div>
+    <div class="meta">
+        <div class="meta-item"><strong>Wrike Plan</strong>${plan}</div>
+        <div class="meta-item"><strong>Users</strong>${numUsers}</div>
+        <div class="meta-item"><strong>Default Rate</strong>$${hourlyRate}/hr</div>
+    </div>
+    <div class="kpi-row">
+        <div class="kpi green"><span class="kpi-label">Annual Hours Saved</span><span class="kpi-value">${Math.round(totalHours).toLocaleString()}</span></div>
+        <div class="kpi green"><span class="kpi-label">Annual Value</span><span class="kpi-value">${formatCurrency(totalValue)}</span></div>
+        <div class="kpi blue"><span class="kpi-label">Working Days</span><span class="kpi-value">${Math.round(totalHours / 8)}</span></div>
+        <div class="kpi blue"><span class="kpi-label">FTE Equivalent</span><span class="kpi-value">${(totalHours / 2080).toFixed(1)}</span></div>
+    </div>
+    <div class="section"><h3>Event Breakdown</h3>
+        <table><thead><tr><th>Event</th><th>Team</th><th>Events/Mo</th><th>Min Saved</th><th>$/hr</th><th>Actions/Evt</th><th>Hours/Yr</th><th>Annual Value</th></tr></thead>
+        <tbody>${rows.map(r => `<tr><td>${r.label}</td><td>${r.team}</td><td>${r.eventsPerMonth}</td><td>${r.minSaved}</td><td>$${r.rate}</td><td>${r.actions}</td><td>${Math.round(r.hoursSaved)}</td><td>${formatCurrency(r.annualValue)}</td></tr>`).join('')}
+        <tr class="total-row"><td colspan="6">Total</td><td>${Math.round(totalHours)}</td><td>${formatCurrency(totalValue)}</td></tr></tbody></table>
+    </div>
+    <div class="section"><h3>AI Agent Consumption & ROI</h3>
+        <div class="cons-grid">
+            <div class="cons-box"><span class="cons-label">Monthly Actions Required</span><span class="cons-val">${Math.round(totalActions).toLocaleString()}</span></div>
+            <div class="cons-box"><span class="cons-label">Monthly Allotted (${plan})</span><span class="cons-val">${monthlyAllotted.toLocaleString()}</span></div>
+            <div class="cons-box"><span class="cons-label">Est. Annual Overage Spend</span><span class="cons-val">${formatCurrency(spend)}</span></div>
+            <div class="cons-box"><span class="cons-label">Net Annual Value</span><span class="cons-val green">${formatCurrency(net)}</span></div>
+        </div>
+    </div>
+    <div class="footer">Confidential — Wrike Value Engineering | ${new Date().toLocaleDateString()}</div>
+    </body></html>`;
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 500);
+}
+
+// ---- AI Agent PPTX Export ----
+function exportAIAgentPPTX() {
+    const data = getEventRowData();
+    if (data.length === 0) {
+        showToast('Add at least one event before exporting', 'warning');
+        return;
+    }
+    const hourlyRate = parseFloat(document.getElementById('ai-hourly-rate').value) || 50;
+    const plan = document.getElementById('ai-plan-type').value;
+    const numUsers = parseInt(document.getElementById('ai-num-users').value) || 1;
+    const unitsPerUser = PLAN_UNITS_MAP[plan] || 10;
+
+    let totalHours = 0, totalValue = 0, totalActions = 0;
+    const rows = data.map(row => {
+        const hrs = (row.minSaved / 60) * row.eventsPerMonth * 12;
+        const val = hrs * row.rate;
+        const acts = row.actions * row.eventsPerMonth;
+        totalHours += hrs; totalValue += val; totalActions += acts;
+        return { ...row, hoursSaved: hrs, annualValue: val, monthlyActions: acts };
+    });
+    const monthlyAllotted = numUsers * unitsPerUser;
+    const excess = Math.max(0, (totalActions - monthlyAllotted) * 12);
+    const spend = Math.ceil(excess / 10000) * 1000;
+    const net = totalValue - spend;
+
+    const pptx = new PptxGenJS();
+    pptx.author = 'Wrike Value Engineering';
+    pptx.company = 'Wrike';
+    pptx.title = 'Wrike AI Agent — Time Savings Analysis';
+
+    const B = { dark: '162136', white: 'FFFFFF', green: '00E05C', surface: 'F2F5FA', muted: '657594', purple: '6366F1', teal: '10B981', tableBorder: 'DCE1EA' };
+
+    function chrome(slide, title) {
+        slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.05, fill: { color: B.green } });
+        slide.addText([{ text: 'wrike', options: { fontSize: 14, bold: true, color: B.green } }], { x: 0.5, y: 0.15, w: 1.5, h: 0.35 });
+        if (title) slide.addText(title, { x: 0.5, y: 0.55, w: 9, h: 0.4, fontSize: 20, bold: true, color: B.dark, fontFace: 'Arial' });
+        slide.addText('Confidential — Wrike Value Engineering', { x: 0.5, y: 5.2, w: 9, h: 0.3, fontSize: 8, color: B.muted, fontFace: 'Arial', align: 'center' });
+    }
+
+    // Slide 1 - Title
+    const s1 = pptx.addSlide();
+    s1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: '100%', fill: { color: B.dark } });
+    s1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.08, fill: { color: B.green } });
+    s1.addText([{ text: 'wrike', options: { fontSize: 28, bold: true, color: B.green } }], { x: 0.8, y: 1.0, w: 3, h: 0.6 });
+    s1.addText('AI Agent Time Savings Analysis', { x: 0.8, y: 1.8, w: 8.5, h: 0.6, fontSize: 28, bold: true, color: B.white, fontFace: 'Arial' });
+    s1.addText(`Plan: ${plan}  |  ${numUsers} Users  |  ${new Date().toLocaleDateString()}`, { x: 0.8, y: 2.5, w: 8.5, h: 0.35, fontSize: 14, color: B.muted, fontFace: 'Arial' });
+
+    // Slide 2 - KPIs
+    const s2 = pptx.addSlide();
+    chrome(s2, 'Annual Impact Summary');
+    const kpis = [
+        { label: 'Hours Saved', value: Math.round(totalHours).toLocaleString(), color: B.green },
+        { label: 'Annual Value', value: formatCurrency(totalValue), color: B.green },
+        { label: 'Working Days', value: String(Math.round(totalHours / 8)), color: B.purple },
+        { label: 'FTE Equivalent', value: (totalHours / 2080).toFixed(1), color: B.teal },
+    ];
+    kpis.forEach((kpi, i) => {
+        const x = 0.5 + i * 2.35;
+        s2.addShape(pptx.ShapeType.roundRect, { x, y: 1.2, w: 2.15, h: 1.3, fill: { color: B.surface }, rectRadius: 0.08 });
+        s2.addText(kpi.label, { x, y: 1.3, w: 2.15, h: 0.3, fontSize: 10, color: B.muted, fontFace: 'Arial', align: 'center', bold: true });
+        s2.addText(kpi.value, { x, y: 1.65, w: 2.15, h: 0.55, fontSize: 28, color: kpi.color, fontFace: 'Arial', align: 'center', bold: true });
+    });
+
+    // Consumption row
+    const cons = [
+        { label: 'Monthly Actions Required', value: Math.round(totalActions).toLocaleString() },
+        { label: 'Monthly Allotted', value: monthlyAllotted.toLocaleString() },
+        { label: 'Est. Overage Spend', value: formatCurrency(spend) },
+        { label: 'Net Annual Value', value: formatCurrency(net) },
+    ];
+    cons.forEach((c, i) => {
+        const x = 0.5 + i * 2.35;
+        s2.addShape(pptx.ShapeType.roundRect, { x, y: 2.8, w: 2.15, h: 1.1, fill: { color: B.surface }, rectRadius: 0.08 });
+        s2.addText(c.label, { x, y: 2.85, w: 2.15, h: 0.3, fontSize: 9, color: B.muted, fontFace: 'Arial', align: 'center', bold: true });
+        s2.addText(c.value, { x, y: 3.15, w: 2.15, h: 0.45, fontSize: 20, color: B.dark, fontFace: 'Arial', align: 'center', bold: true });
+    });
+
+    // Slide 3 - Event Table
+    const s3 = pptx.addSlide();
+    chrome(s3, 'Event Breakdown');
+    const tableRows = [
+        [{ text: 'Event', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9 } },
+         { text: 'Team', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9 } },
+         { text: 'Evt/Mo', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9, align: 'center' } },
+         { text: 'Min', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9, align: 'center' } },
+         { text: 'Hrs/Yr', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9, align: 'center' } },
+         { text: 'Value', options: { bold: true, fill: B.surface, color: B.dark, fontSize: 9, align: 'right' } }]
+    ];
+    rows.forEach(r => {
+        tableRows.push([
+            { text: r.label, options: { fontSize: 8, color: B.dark } },
+            { text: r.team, options: { fontSize: 8, color: B.muted } },
+            { text: String(r.eventsPerMonth), options: { fontSize: 8, align: 'center' } },
+            { text: String(r.minSaved), options: { fontSize: 8, align: 'center' } },
+            { text: String(Math.round(r.hoursSaved)), options: { fontSize: 8, align: 'center', color: B.green, bold: true } },
+            { text: formatCurrency(r.annualValue), options: { fontSize: 8, align: 'right', color: B.green, bold: true } }
+        ]);
+    });
+    tableRows.push([
+        { text: 'Total', options: { bold: true, fill: B.surface, fontSize: 9 } },
+        { text: '', options: { fill: B.surface } },
+        { text: '', options: { fill: B.surface } },
+        { text: '', options: { fill: B.surface } },
+        { text: String(Math.round(totalHours)), options: { bold: true, fill: B.surface, fontSize: 9, align: 'center', color: B.green } },
+        { text: formatCurrency(totalValue), options: { bold: true, fill: B.surface, fontSize: 9, align: 'right', color: B.green } }
+    ]);
+    s3.addTable(tableRows, { x: 0.5, y: 1.1, w: 9, colW: [3.2, 1.3, 0.9, 0.8, 0.9, 1.2], border: { pt: 0.5, color: B.tableBorder }, rowH: 0.32, fontFace: 'Arial' });
+
+    pptx.writeFile({ fileName: 'Wrike_AI_Agent_Time_Savings.pptx' })
+        .then(() => showToast('PowerPoint exported!', 'success'))
+        .catch(err => { console.error(err); showToast('Export failed', 'warning'); });
+}
+
+// ---- Quote PPTX Export ----
+function exportQuotePPTX() {
+    const plan = PLANS[selectedPlan];
+    const customer = document.getElementById('quote-customer').value || 'Customer';
+    const users = document.getElementById('quote-users').value;
+    const total = document.getElementById('quote-total-display').textContent;
+    const monthly = document.getElementById('quote-monthly-display').textContent;
+    const perUser = document.getElementById('quote-effective-per-user').textContent;
+
+    const pptx = new PptxGenJS();
+    pptx.author = 'Wrike Value Engineering';
+    pptx.company = 'Wrike';
+    pptx.title = `Pricing Quote — ${customer}`;
+
+    const B = { dark: '162136', white: 'FFFFFF', green: '00E05C', surface: 'F2F5FA', muted: '657594', purple: '6366F1', tableBorder: 'DCE1EA' };
+
+    function chrome(slide, title) {
+        slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.05, fill: { color: B.green } });
+        slide.addText([{ text: 'wrike', options: { fontSize: 14, bold: true, color: B.green } }], { x: 0.5, y: 0.15, w: 1.5, h: 0.35 });
+        if (title) slide.addText(title, { x: 0.5, y: 0.55, w: 9, h: 0.4, fontSize: 20, bold: true, color: B.dark, fontFace: 'Arial' });
+        slide.addText('Confidential — Wrike Value Engineering', { x: 0.5, y: 5.2, w: 9, h: 0.3, fontSize: 8, color: B.muted, fontFace: 'Arial', align: 'center' });
+    }
+
+    // Slide 1 - Title
+    const s1 = pptx.addSlide();
+    s1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: '100%', fill: { color: B.dark } });
+    s1.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.08, fill: { color: B.green } });
+    s1.addText([{ text: 'wrike', options: { fontSize: 28, bold: true, color: B.green } }], { x: 0.8, y: 1.0, w: 3, h: 0.6 });
+    s1.addText('Pricing Quote', { x: 0.8, y: 1.8, w: 8.5, h: 0.6, fontSize: 28, bold: true, color: B.white, fontFace: 'Arial' });
+    s1.addText(`${customer}  |  ${new Date().toLocaleDateString()}`, { x: 0.8, y: 2.5, w: 8.5, h: 0.35, fontSize: 14, color: B.muted, fontFace: 'Arial' });
+
+    // Slide 2 - Quote Details
+    const s2 = pptx.addSlide();
+    chrome(s2, `Quote for ${customer}`);
+
+    const lineItems = [
+        ['Plan', `${plan.name} — ${plan.customPricing ? 'Custom pricing' : '$' + plan.pricePerUser + '/user/mo'}`],
+        ['Licensed Users', users],
+    ];
+
+    const baseTxt = document.getElementById('quote-base-display').textContent;
+    lineItems.push(['Base License', baseTxt]);
+
+    if (document.getElementById('quote-addons-line').style.display !== 'none') {
+        lineItems.push(['Add-Ons', document.getElementById('quote-addons-display').textContent]);
+    }
+    if (document.getElementById('quote-services-line').style.display !== 'none') {
+        lineItems.push(['Professional Services', document.getElementById('quote-services-display').textContent]);
+    }
+    if (document.getElementById('quote-discount-line').style.display !== 'none') {
+        lineItems.push(['Discount', document.getElementById('quote-discount-display').textContent]);
+    }
+
+    const tableRows = lineItems.map(([label, value]) => [
+        { text: label, options: { fontSize: 11, color: B.dark, fontFace: 'Arial' } },
+        { text: value, options: { fontSize: 11, color: B.dark, fontFace: 'Arial', align: 'right' } }
+    ]);
+    tableRows.push([
+        { text: 'Total Annual Investment', options: { fontSize: 13, bold: true, color: B.dark, fill: B.surface } },
+        { text: total, options: { fontSize: 13, bold: true, color: B.green, fill: B.surface, align: 'right' } }
+    ]);
+    tableRows.push([
+        { text: 'Effective Monthly', options: { fontSize: 11, color: B.muted } },
+        { text: monthly, options: { fontSize: 11, color: B.muted, align: 'right' } }
+    ]);
+    tableRows.push([
+        { text: 'Effective Per User / Month', options: { fontSize: 11, color: B.muted } },
+        { text: perUser, options: { fontSize: 11, color: B.muted, align: 'right' } }
+    ]);
+    s2.addTable(tableRows, { x: 1.0, y: 1.2, w: 8, colW: [4.5, 3.5], border: { pt: 0.5, color: B.tableBorder }, rowH: 0.38, fontFace: 'Arial' });
+
+    if (roiResults) {
+        s2.addText('Linked Value Analysis', { x: 1.0, y: 1.2 + tableRows.length * 0.38 + 0.3, w: 8, h: 0.35, fontSize: 14, bold: true, color: B.dark, fontFace: 'Arial' });
+        const roiY = 1.2 + tableRows.length * 0.38 + 0.7;
+        const roiItems = [
+            { label: 'Annual Savings', value: formatCurrency(roiResults.totalAnnualSavings) },
+            { label: 'Net Benefit', value: formatCurrency(roiResults.netBenefit) },
+            { label: 'Payback', value: roiResults.paybackMonths + ' months' },
+        ];
+        roiItems.forEach((item, i) => {
+            const x = 1.0 + i * 2.8;
+            s2.addShape(pptx.ShapeType.roundRect, { x, y: roiY, w: 2.5, h: 0.9, fill: { color: B.surface }, rectRadius: 0.06 });
+            s2.addText(item.label, { x, y: roiY + 0.05, w: 2.5, h: 0.25, fontSize: 9, color: B.muted, align: 'center', fontFace: 'Arial', bold: true });
+            s2.addText(item.value, { x, y: roiY + 0.35, w: 2.5, h: 0.4, fontSize: 18, color: B.green, align: 'center', fontFace: 'Arial', bold: true });
+        });
+    }
+
+    pptx.writeFile({ fileName: `${customer.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Quote.pptx` })
+        .then(() => showToast('Quote PowerPoint exported!', 'success'))
+        .catch(err => { console.error(err); showToast('Export failed', 'warning'); });
 }
 
 // ---- AI Agent ROI Calculator ----
