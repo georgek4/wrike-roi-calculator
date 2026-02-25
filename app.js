@@ -130,6 +130,7 @@ function navigateTo(page) {
 
     if (page === 'pricing') updateQuote();
     if (page === 'saved') renderSavedAssessments();
+    if (page === 'ai-agents') calculateAIROI();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -445,9 +446,11 @@ function renderResults() {
     const storyDiv = document.getElementById('value-story-text');
     storyDiv.innerHTML = generateValueStory(r);
 
-    // Charts
-    drawSavingsChart(r);
-    drawProjectionChart(r);
+    // Charts — defer to next frame so the panel has rendered and canvases have dimensions
+    requestAnimationFrame(() => {
+        drawSavingsChart(r);
+        drawProjectionChart(r);
+    });
 }
 
 function generateValueStory(r) {
@@ -525,13 +528,17 @@ function generateValueStory(r) {
 // ---- Charts (Canvas-based, no external libraries) ----
 function drawSavingsChart(r) {
     const canvas = document.getElementById('savings-chart');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const w = Math.max(rect.width, 360);
+    const h = 280;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
     ctx.scale(dpr, dpr);
-    const w = canvas.offsetWidth;
-    const h = canvas.offsetHeight;
 
     ctx.clearRect(0, 0, w, h);
 
@@ -590,13 +597,17 @@ function drawSavingsChart(r) {
 
 function drawProjectionChart(r) {
     const canvas = document.getElementById('projection-chart');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const w = Math.max(rect.width, 360);
+    const h = 280;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
     ctx.scale(dpr, dpr);
-    const w = canvas.offsetWidth;
-    const h = canvas.offsetHeight;
 
     ctx.clearRect(0, 0, w, h);
 
@@ -931,45 +942,48 @@ function exportQuotePDF() {
 }
 
 function generatePDFHTML(r, type) {
+    const wrikeLogo = '<svg width="90" height="44" viewBox="0 0 124 60" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_6002_277)"><path d="M66.2113 35.0665H69.7493V29.6051C69.7493 26.3051 72.6847 26.363 74.2204 26.6139V22.8893C71.7711 22.6771 70.3131 23.3525 69.6521 24.6648H69.5744L69.5938 22.9472H66.1919V35.0667H66.2113Z" fill="#162136"/><path d="M84.562 35.0667H86.7781L90.4328 30.493L93.5237 35.0667H97.6448L92.785 28.0421L97.0422 22.9281H92.9405L88.0806 29.0263H88.0028L88.0417 16.8684H84.562V35.0667Z" fill="#162136"/><path d="M44.614 35.0666H47.355L51.5539 27.2701L55.6168 35.0666H58.3967L64.6368 22.928H60.4961L56.6665 30.6666L53.0313 22.928H50.0571L46.2275 30.7052L42.5923 22.928H38.4517L44.614 35.0666Z" fill="#162136"/><path d="M78.9443 21.1912C80.1468 21.1912 81.1216 20.2235 81.1216 19.0298C81.1216 17.8361 80.1468 16.8684 78.9443 16.8684C77.7419 16.8684 76.7671 17.8361 76.7671 19.0298C76.7671 20.2235 77.7419 21.1912 78.9443 21.1912Z" fill="#162136"/><path d="M80.694 22.928H77.1948V35.0666H80.694V22.928Z" fill="#162136"/><path d="M8.20331 23.9702C9.89456 23.9702 10.6916 24.279 11.9163 25.4948L18.4869 32.0176C18.6812 32.2106 18.7201 32.2878 18.759 32.4035C18.7784 32.4421 18.7784 32.5 18.7784 32.5386C18.7784 32.5772 18.7784 32.6351 18.759 32.6737C18.7201 32.7895 18.6812 32.8667 18.4869 33.0597L13.9963 37.5369C13.8019 37.7299 13.7242 37.7685 13.6075 37.8071C13.5686 37.8264 13.5103 37.8264 13.4714 37.8264C13.4326 37.8264 13.3742 37.8264 13.3354 37.8071C13.2187 37.7685 13.141 37.7299 12.9466 37.5369L0.213646 24.8965C-0.155706 24.5299 -0.0196293 23.9702 0.602437 23.9702H8.20331Z" fill="#00E05C"/><path d="M26.749 16C25.0577 16 24.2607 16.3088 23.036 17.5246L16.4654 24.0474C16.271 24.2404 16.2321 24.3176 16.1933 24.4333C16.1738 24.4719 16.1738 24.5298 16.1738 24.5684C16.1738 24.607 16.1738 24.6649 16.1933 24.7035C16.2321 24.8193 16.271 24.8965 16.4654 25.0895L20.956 29.5474C21.1504 29.7404 21.2281 29.779 21.3448 29.8176C21.3836 29.8369 21.442 29.8369 21.4808 29.8369C21.5197 29.8369 21.578 29.8369 21.6169 29.8176C21.7335 29.779 21.8113 29.7404 22.0057 29.5474L34.7386 16.907C35.108 16.5404 34.9719 15.9807 34.3498 15.9807H26.749V16Z" fill="#00E05C"/><path d="M107.579 31.0334C107.151 31.6702 106.257 32.4614 104.76 32.4614C103.01 32.4614 101.766 31.4579 101.494 30.0106H111C111 29.7597 111 29.393 111 29.0456C111 25.5334 108.453 22.7158 104.682 22.7158C100.988 22.7158 98.1309 25.4948 98.1309 29.0456C98.1309 32.5772 100.93 35.3755 104.682 35.3755C107.481 35.3755 109.173 34.2755 110.261 32.8667L107.579 31.0334ZM104.488 25.4369C106.101 25.4369 107.229 26.3246 107.617 27.5983H101.338C101.727 26.3246 102.835 25.4369 104.488 25.4369Z" fill="#162136"/></g><defs><clipPath id="clip0_6002_277"><rect width="111" height="22" fill="white" transform="translate(0 16)"/></clipPath></defs></svg>';
     const styles = `
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a2e; padding: 40px; line-height: 1.6; }
-            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #08CF65; padding-bottom: 20px; margin-bottom: 30px; }
-            .logo { font-size: 28px; font-weight: 800; color: #08CF65; }
-            .title { font-size: 22px; font-weight: 700; color: #1a1a2e; }
-            .subtitle { font-size: 14px; color: #666; }
+            body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #162136; padding: 40px; line-height: 1.6; }
+            .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 0; }
+            .header-accent { height: 3px; background: #00E05C; margin-bottom: 30px; }
+            .logo-block { display: flex; flex-direction: column; }
+            .logo-subtitle { font-size: 12px; color: #657594; margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+            .title { font-size: 22px; font-weight: 700; color: #162136; }
+            .subtitle { font-size: 14px; color: #657594; }
             .meta { display: flex; gap: 30px; margin-bottom: 30px; }
             .meta-item { font-size: 13px; }
-            .meta-item strong { display: block; color: #333; }
+            .meta-item strong { display: block; color: #2B3A57; }
             .kpi-row { display: flex; gap: 16px; margin-bottom: 30px; }
-            .kpi { flex: 1; background: #f8f9fa; border-radius: 8px; padding: 16px; text-align: center; }
-            .kpi-label { font-size: 11px; text-transform: uppercase; color: #666; display: block; }
+            .kpi { flex: 1; background: #F2F5FA; border-radius: 8px; padding: 16px; text-align: center; }
+            .kpi-label { font-size: 11px; text-transform: uppercase; color: #657594; display: block; }
             .kpi-value { font-size: 24px; font-weight: 700; }
-            .kpi.green .kpi-value { color: #08CF65; }
+            .kpi.green .kpi-value { color: #00E05C; }
             .kpi.blue .kpi-value { color: #6366F1; }
             .kpi.purple .kpi-value { color: #8B5CF6; }
             .kpi.teal .kpi-value { color: #10B981; }
             .section { margin-bottom: 24px; }
-            .section h3 { font-size: 16px; color: #1a1a2e; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px; }
+            .section h3 { font-size: 16px; color: #162136; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px; }
             table { width: 100%; border-collapse: collapse; font-size: 13px; }
-            th { background: #f1f3f5; padding: 8px 12px; text-align: left; font-weight: 600; }
+            th { background: #F2F5FA; padding: 8px 12px; text-align: left; font-weight: 600; }
             td { padding: 8px 12px; border-bottom: 1px solid #eee; }
-            .total-row td { font-weight: 700; background: #f8f9fa; }
-            .story { background: #f8f9fa; padding: 20px; border-radius: 8px; font-size: 13px; line-height: 1.8; }
-            .story strong { color: #08CF65; }
+            .total-row td { font-weight: 700; background: #F2F5FA; }
+            .story { background: #F2F5FA; padding: 20px; border-radius: 8px; font-size: 13px; line-height: 1.8; }
+            .story strong { color: #00E05C; }
             .story h3 { border: none; font-size: 18px; margin-bottom: 8px; }
-            .story h4 { font-size: 14px; margin: 16px 0 6px; color: #1a1a2e; }
+            .story h4 { font-size: 14px; margin: 16px 0 6px; color: #162136; }
             .story ol, .story ul { padding-left: 20px; margin: 8px 0; }
             .story li { margin-bottom: 4px; }
             .story-value-split { display: flex; gap: 20px; margin: 12px 0; }
             .story-value-item { flex: 1; background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 16px; }
-            .story-value-num { font-size: 22px; font-weight: 700; color: #08CF65; display: block; }
-            .story-value-label { font-size: 12px; color: #666; text-transform: uppercase; display: block; margin-bottom: 6px; }
-            .story-value-item p { font-size: 12px; color: #555; margin: 0; }
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 11px; color: #999; text-align: center; }
+            .story-value-num { font-size: 22px; font-weight: 700; color: #00E05C; display: block; }
+            .story-value-label { font-size: 12px; color: #657594; text-transform: uppercase; display: block; margin-bottom: 6px; }
+            .story-value-item p { font-size: 12px; color: #657594; margin: 0; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 11px; color: #657594; text-align: center; }
             .quote-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-            .quote-line.total { font-weight: 700; font-size: 18px; border-top: 2px solid #08CF65; padding-top: 12px; }
+            .quote-line.total { font-weight: 700; font-size: 18px; border-top: 2px solid #00E05C; padding-top: 12px; }
             @media print { body { padding: 20px; } }
         </style>
     `;
@@ -977,9 +991,10 @@ function generatePDFHTML(r, type) {
     if (type === 'roi' && r) {
         return `<!DOCTYPE html><html><head><title>Business Case — ${r.company}</title>${styles}</head><body>
             <div class="header">
-                <div><span class="logo">Wrike</span> <span style="color:#666; margin-left:8px;">Value Engineering</span></div>
+                <div class="logo-block">${wrikeLogo}<span class="logo-subtitle">Value Engineering</span></div>
                 <div style="text-align:right;"><div class="title">Business Case Analysis</div><div class="subtitle">${r.verticalName}</div></div>
             </div>
+            <div class="header-accent"></div>
             <div class="meta">
                 <div class="meta-item"><strong>Company</strong>${r.company}</div>
                 <div class="meta-item"><strong>Prepared By</strong>${r.preparedBy || 'Wrike Value Engineering'}</div>
@@ -1009,7 +1024,7 @@ function generatePDFHTML(r, type) {
                 </tbody></table>
             </div>
             <div class="section"><h3>Executive Summary & Business Case</h3><div class="story">${generateValueStory(r)}</div></div>
-            <div class="footer">Confidential — Prepared by Wrike Value Engineering | ${new Date().toLocaleDateString()}</div>
+            <div class="footer">Confidential — Wrike Value Engineering | ${new Date().toLocaleDateString()}</div>
         </body></html>`;
     }
 
@@ -1024,9 +1039,10 @@ function generatePDFHTML(r, type) {
 
     return `<!DOCTYPE html><html><head><title>Quote — ${customer}</title>${styles}</head><body>
         <div class="header">
-            <div><span class="logo">Wrike</span> <span style="color:#666; margin-left:8px;">Quote</span></div>
+            <div class="logo-block">${wrikeLogo}<span class="logo-subtitle">Value Engineering</span></div>
             <div style="text-align:right;"><div class="title">Pricing Quote</div><div class="subtitle">${new Date().toLocaleDateString()}</div></div>
         </div>
+        <div class="header-accent"></div>
         <div class="meta">
             <div class="meta-item"><strong>Customer</strong>${customer}</div>
             <div class="meta-item"><strong>Contact</strong>${contact}</div>
@@ -1039,7 +1055,7 @@ function generatePDFHTML(r, type) {
             <div class="quote-line"><span>Licensed Users: ${users}</span><span>${document.getElementById('quote-base-display').textContent}</span></div>
             ${document.getElementById('quote-addons-line').style.display !== 'none' ? `<div class="quote-line"><span>Add-Ons</span><span>${document.getElementById('quote-addons-display').textContent}</span></div>` : ''}
             ${document.getElementById('quote-services-line').style.display !== 'none' ? `<div class="quote-line"><span>Professional Services</span><span>${document.getElementById('quote-services-display').textContent}</span></div>` : ''}
-            ${document.getElementById('quote-discount-line').style.display !== 'none' ? `<div class="quote-line" style="color:#08CF65;"><span>Discount</span><span>${document.getElementById('quote-discount-display').textContent}</span></div>` : ''}
+            ${document.getElementById('quote-discount-line').style.display !== 'none' ? `<div class="quote-line" style="color:#00E05C;"><span>Discount</span><span>${document.getElementById('quote-discount-display').textContent}</span></div>` : ''}
             <div class="quote-line total"><span>Total Annual Investment</span><span>${total}</span></div>
             <div class="quote-line"><span>Effective Monthly</span><span>${monthly}</span></div>
             <div class="quote-line"><span>Effective Per User / Month</span><span>${perUser}</span></div>
@@ -1047,13 +1063,13 @@ function generatePDFHTML(r, type) {
         ${roiResults ? `
         <div class="section">
             <h3>Linked Value Analysis</h3>
-            <div class="quote-line"><span>Projected Annual Savings</span><span style="color:#08CF65;">${formatCurrency(roiResults.totalAnnualSavings)}</span></div>
-            <div class="quote-line"><span>Net Benefit (Year 1)</span><span style="color:#08CF65;">${formatCurrency(roiResults.netBenefit)}</span></div>
+            <div class="quote-line"><span>Projected Annual Savings</span><span style="color:#00E05C;">${formatCurrency(roiResults.totalAnnualSavings)}</span></div>
+            <div class="quote-line"><span>Net Benefit (Year 1)</span><span style="color:#00E05C;">${formatCurrency(roiResults.netBenefit)}</span></div>
             <div class="quote-line"><span>Payback Period</span><span>${roiResults.paybackMonths} months</span></div>
         </div>` : ''}
         <div class="footer">
             <p>This quote is valid for 30 days from the date above.</p>
-            <p>Confidential — Wrike, a Citrix Company | ${new Date().toLocaleDateString()}</p>
+            <p>Confidential — Wrike Value Engineering | ${new Date().toLocaleDateString()}</p>
         </div>
     </body></html>`;
 }
@@ -1081,104 +1097,237 @@ function exportROIPPTX() {
     pptx.title = `${r.company} — Wrike Business Case`;
 
     const BRAND = {
-        green: '08CF65', dark: '0D0D1A', cardBg: '1A1A2E', white: 'FFFFFF',
-        textLight: 'F0F0F5', textMuted: 'A0A0B8', purple: '6366F1',
-        pink: 'EC4899', amber: 'F59E0B', teal: '10B981'
+        dark: '162136', darkSecondary: '2B3A57', white: 'FFFFFF',
+        green: '00E05C', greenLight: 'A4F5C6', greenMedium: '62ED9C',
+        surface: 'F2F5FA', muted: '657594',
+        purple: '6366F1', pink: 'EC4899', teal: '10B981',
+        yellow: 'FFE77B', golden: 'FFCF00', pinkSoft: 'FFCACD',
+        tableBorder: 'DCE1EA'
     };
 
+    let slideNum = 0;
+
+    function addBrandChrome(slide) {
+        slideNum++;
+
+        // Green accent bar at top
+        slide.addShape(pptx.ShapeType.rect, {
+            x: 0, y: 0, w: '100%', h: 0.05,
+            fill: { color: BRAND.green }
+        });
+
+        // Subtle green glow in top-right corner
+        slide.addShape(pptx.ShapeType.ellipse, {
+            x: 7.5, y: -0.8, w: 3.5, h: 2.5,
+            fill: { type: 'solid', color: BRAND.greenLight },
+            transparency: 88
+        });
+
+        // "wrike" text logo at top-left
+        slide.addText([
+            { text: '✓ ', options: { color: BRAND.green, fontSize: 11, bold: true } },
+            { text: 'wrike', options: { color: BRAND.dark, fontSize: 11, bold: true } }
+        ], { x: 0.4, y: 0.2, w: 1.2, h: 0.3, fontFace: 'Arial' });
+
+        // Decorative geometric shapes in green (top-right area)
+        slide.addShape(pptx.ShapeType.ellipse, {
+            x: 9.05, y: 0.25, w: 0.18, h: 0.18,
+            line: { color: BRAND.green, width: 1 },
+            fill: { type: 'none' }
+        });
+        slide.addText('+', {
+            x: 9.35, y: 0.15, w: 0.2, h: 0.2,
+            fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'center'
+        });
+
+        // Page number at bottom-right
+        slide.addText(String(slideNum), {
+            x: 9.0, y: 6.9, w: 0.5, h: 0.25,
+            fontSize: 8, color: BRAND.muted, fontFace: 'Arial', align: 'right'
+        });
+    }
+
     pptx.defineSlideMaster({
-        title: 'WRIKE_MASTER',
-        background: { color: BRAND.dark },
-        objects: [
-            { rect: { x: 0, y: 0, w: '100%', h: 0.06, fill: { color: BRAND.green } } },
-            { text: { text: 'WRIKE', options: { x: 0.4, y: 6.85, w: 1, h: 0.3, fontSize: 9, bold: true, color: BRAND.green, fontFace: 'Arial' } } },
-            { text: { text: 'Confidential', options: { x: 8.5, y: 6.85, w: 1.2, h: 0.3, fontSize: 8, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } } }
-        ]
+        title: 'WRIKE_BRAND',
+        background: { color: BRAND.white }
     });
 
     // --- Slide 1: Title ---
-    const slide1 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide1.addText('Business Case', { x: 0.6, y: 1.5, w: 8.8, h: 0.7, fontSize: 36, bold: true, color: BRAND.green, fontFace: 'Arial' });
-    slide1.addText(r.company, { x: 0.6, y: 2.2, w: 8.8, h: 0.6, fontSize: 28, bold: true, color: BRAND.white, fontFace: 'Arial' });
-    slide1.addText(`${r.verticalName} | ${scenarioLabel} | ${r.users} Users`, { x: 0.6, y: 2.85, w: 8.8, h: 0.4, fontSize: 14, color: BRAND.textMuted, fontFace: 'Arial' });
-    slide1.addText(`Prepared by ${r.preparedBy || 'Wrike Value Engineering'} — ${r.date}`, { x: 0.6, y: 3.4, w: 8.8, h: 0.3, fontSize: 11, color: BRAND.textMuted, fontFace: 'Arial' });
+    const slide1 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide1);
+
+    slide1.addShape(pptx.ShapeType.rect, {
+        x: 0.6, y: 1.8, w: 0.06, h: 1.6,
+        fill: { color: BRAND.green }
+    });
+    slide1.addText('Business Case', {
+        x: 0.9, y: 1.4, w: 8.5, h: 0.7,
+        fontSize: 38, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+    slide1.addText(r.company, {
+        x: 0.9, y: 2.1, w: 8.5, h: 0.6,
+        fontSize: 28, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+    slide1.addText(`${r.verticalName}  |  ${scenarioLabel}  |  ${r.users} Users`, {
+        x: 0.9, y: 2.85, w: 8.5, h: 0.4,
+        fontSize: 14, color: BRAND.muted, fontFace: 'Arial'
+    });
+    slide1.addShape(pptx.ShapeType.rect, {
+        x: 0.9, y: 3.45, w: 3.0, h: 0.02,
+        fill: { color: BRAND.surface }
+    });
+    slide1.addText(`Prepared by ${r.preparedBy || 'Wrike Value Engineering'}  —  ${r.date}`, {
+        x: 0.9, y: 3.65, w: 8.5, h: 0.3,
+        fontSize: 11, color: BRAND.muted, fontFace: 'Arial'
+    });
 
     // --- Slide 2: Executive Snapshot ---
-    const slide2 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide2.addText('Executive Snapshot', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    const slide2 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide2);
+
+    slide2.addText('Executive Snapshot', {
+        x: 0.6, y: 0.55, w: 8.8, h: 0.5,
+        fontSize: 24, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
 
     const kpis = [
-        { label: 'Annual Savings', value: formatCurrency(r.totalAnnualSavings), color: BRAND.green },
-        { label: 'Wrike Investment', value: formatCurrency(r.annualInvestment), color: BRAND.purple },
-        { label: 'Net Benefit (Yr 1)', value: formatCurrency(r.netBenefit), color: BRAND.pink },
-        { label: 'Payback Period', value: r.paybackMonths + ' months', color: BRAND.teal }
+        { label: 'Annual Savings', value: formatCurrency(r.totalAnnualSavings), accent: BRAND.green },
+        { label: 'Wrike Investment', value: formatCurrency(r.annualInvestment), accent: BRAND.purple },
+        { label: 'Net Benefit (Yr 1)', value: formatCurrency(r.netBenefit), accent: BRAND.pink },
+        { label: 'Payback Period', value: r.paybackMonths + ' months', accent: BRAND.teal }
     ];
     kpis.forEach((kpi, i) => {
-        const x = 0.6 + i * 2.25;
-        slide2.addShape(pptx.ShapeType.roundRect, { x: x, y: 1.0, w: 2.1, h: 1.2, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
-        slide2.addShape(pptx.ShapeType.rect, { x: x, y: 1.0, w: 2.1, h: 0.05, fill: { color: kpi.color } });
-        slide2.addText(kpi.label, { x: x, y: 1.15, w: 2.1, h: 0.3, fontSize: 9, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' });
-        slide2.addText(kpi.value, { x: x, y: 1.45, w: 2.1, h: 0.5, fontSize: 22, bold: true, color: kpi.color, fontFace: 'Arial', align: 'center' });
+        const x = 0.5 + i * 2.35;
+        slide2.addShape(pptx.ShapeType.roundRect, {
+            x: x, y: 1.25, w: 2.15, h: 1.25,
+            fill: { color: BRAND.surface }, rectRadius: 0.08,
+            line: { color: BRAND.tableBorder, width: 0.5 }
+        });
+        slide2.addShape(pptx.ShapeType.rect, {
+            x: x, y: 1.25, w: 2.15, h: 0.05,
+            fill: { color: kpi.accent }
+        });
+        slide2.addText(kpi.label, {
+            x: x, y: 1.42, w: 2.15, h: 0.28,
+            fontSize: 9, color: BRAND.muted, fontFace: 'Arial', align: 'center'
+        });
+        slide2.addText(kpi.value, {
+            x: x, y: 1.72, w: 2.15, h: 0.5,
+            fontSize: 22, bold: true, color: BRAND.dark, fontFace: 'Arial', align: 'center'
+        });
     });
 
     slide2.addText(`${r.company} can save ${formatCurrency(r.totalAnnualSavings)} per year (${savingsPerUser} per employee) by implementing Wrike for ${r.verticalName}. The investment pays for itself in just ${r.paybackMonths} months.`, {
-        x: 0.6, y: 2.5, w: 8.8, h: 0.8, fontSize: 13, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.4
+        x: 0.6, y: 2.75, w: 8.8, h: 0.7,
+        fontSize: 12, color: BRAND.dark, fontFace: 'Arial', lineSpacingMultiple: 1.4
     });
 
-    // Value split boxes
-    slide2.addShape(pptx.ShapeType.roundRect, { x: 0.6, y: 3.5, w: 4.2, h: 1.5, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
-    slide2.addText(formatCurrency(r.totalProductivitySavings), { x: 0.8, y: 3.6, w: 3.8, h: 0.4, fontSize: 20, bold: true, color: BRAND.green, fontFace: 'Arial' });
-    slide2.addText(`Productivity Recovery (${prodPct}%)`, { x: 0.8, y: 4.0, w: 3.8, h: 0.25, fontSize: 10, color: BRAND.textMuted, fontFace: 'Arial' });
-    slide2.addText('Time savings from streamlined handoffs,\nfewer meetings, and automated reporting', { x: 0.8, y: 4.3, w: 3.8, h: 0.5, fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.3 });
+    // Value split cards
+    slide2.addShape(pptx.ShapeType.roundRect, {
+        x: 0.5, y: 3.65, w: 4.3, h: 1.55,
+        fill: { color: BRAND.surface }, rectRadius: 0.08,
+        line: { color: BRAND.tableBorder, width: 0.5 }
+    });
+    slide2.addShape(pptx.ShapeType.rect, {
+        x: 0.5, y: 3.65, w: 4.3, h: 0.05,
+        fill: { color: BRAND.green }
+    });
+    slide2.addText(formatCurrency(r.totalProductivitySavings), {
+        x: 0.7, y: 3.8, w: 3.9, h: 0.4,
+        fontSize: 20, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+    slide2.addText(`Productivity Recovery (${prodPct}%)`, {
+        x: 0.7, y: 4.2, w: 3.9, h: 0.25,
+        fontSize: 10, color: BRAND.muted, fontFace: 'Arial'
+    });
+    slide2.addText('Time savings from streamlined handoffs,\nfewer meetings, and automated reporting', {
+        x: 0.7, y: 4.5, w: 3.9, h: 0.5,
+        fontSize: 10, color: BRAND.dark, fontFace: 'Arial', lineSpacingMultiple: 1.3
+    });
 
-    slide2.addShape(pptx.ShapeType.roundRect, { x: 5.2, y: 3.5, w: 4.2, h: 1.5, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
-    slide2.addText(formatCurrency(r.totalCostAvoidance), { x: 5.4, y: 3.6, w: 3.8, h: 0.4, fontSize: 20, bold: true, color: BRAND.green, fontFace: 'Arial' });
-    slide2.addText(`Cost Avoidance (${costPct}%)`, { x: 5.4, y: 4.0, w: 3.8, h: 0.25, fontSize: 10, color: BRAND.textMuted, fontFace: 'Arial' });
-    slide2.addText('Reduced delays, fewer errors,\nrecovered revenue, and tool consolidation', { x: 5.4, y: 4.3, w: 3.8, h: 0.5, fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.3 });
+    slide2.addShape(pptx.ShapeType.roundRect, {
+        x: 5.2, y: 3.65, w: 4.3, h: 1.55,
+        fill: { color: BRAND.surface }, rectRadius: 0.08,
+        line: { color: BRAND.tableBorder, width: 0.5 }
+    });
+    slide2.addShape(pptx.ShapeType.rect, {
+        x: 5.2, y: 3.65, w: 4.3, h: 0.05,
+        fill: { color: BRAND.green }
+    });
+    slide2.addText(formatCurrency(r.totalCostAvoidance), {
+        x: 5.4, y: 3.8, w: 3.9, h: 0.4,
+        fontSize: 20, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+    slide2.addText(`Cost Avoidance (${costPct}%)`, {
+        x: 5.4, y: 4.2, w: 3.9, h: 0.25,
+        fontSize: 10, color: BRAND.muted, fontFace: 'Arial'
+    });
+    slide2.addText('Reduced delays, fewer errors,\nrecovered revenue, and tool consolidation', {
+        x: 5.4, y: 4.5, w: 3.9, h: 0.5,
+        fontSize: 10, color: BRAND.dark, fontFace: 'Arial', lineSpacingMultiple: 1.3
+    });
 
     // --- Slide 3: Productivity Breakdown ---
-    const slide3 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide3.addText('Productivity Savings Breakdown', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    const slide3 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide3);
 
+    slide3.addText('Productivity Savings Breakdown', {
+        x: 0.6, y: 0.55, w: 8.8, h: 0.5,
+        fontSize: 24, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+
+    const prodHeaderRow = [
+        { text: 'Activity', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', fill: { color: BRAND.white } } },
+        { text: 'Current (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', align: 'center', fill: { color: BRAND.white } } },
+        { text: 'Saved (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', align: 'center', fill: { color: BRAND.white } } },
+        { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', align: 'right', fill: { color: BRAND.white } } }
+    ];
     const prodRows = r.productivityItems.map(item => [
-        { text: item.label, options: { fontSize: 10, color: BRAND.textLight, fontFace: 'Arial' } },
-        { text: item.currentHours.toFixed(1), options: { fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', align: 'center' } },
-        { text: item.hoursSaved.toFixed(1), options: { fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'center' } },
-        { text: formatCurrency(item.annualSavings), options: { fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+        { text: item.label, options: { fontSize: 10, color: BRAND.dark, fontFace: 'Arial' } },
+        { text: item.currentHours.toFixed(1), options: { fontSize: 10, color: BRAND.dark, fontFace: 'Arial', align: 'center' } },
+        { text: item.hoursSaved.toFixed(1), options: { fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'center', bold: true } },
+        { text: formatCurrency(item.annualSavings), options: { fontSize: 10, color: BRAND.dark, fontFace: 'Arial', align: 'right' } }
     ]);
     prodRows.push([
-        { text: 'TOTAL', options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial' } },
+        { text: 'TOTAL', options: { fontSize: 10, bold: true, color: BRAND.dark, fontFace: 'Arial' } },
         { text: '', options: {} },
         { text: r.totalWeeklyHoursSaved.toFixed(1), options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'center' } },
         { text: formatCurrency(r.totalProductivitySavings), options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
     ]);
 
     slide3.addTable(
-        [
-            [
-                { text: 'Activity', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial' } },
-                { text: 'Current (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' } },
-                { text: 'Saved (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' } },
-                { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } }
-            ],
-            ...prodRows
-        ],
-        { x: 0.6, y: 1.0, w: 8.8, colW: [4.2, 1.5, 1.5, 1.6], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.4 }
+        [prodHeaderRow, ...prodRows],
+        {
+            x: 0.5, y: 1.2, w: 9.0, colW: [4.2, 1.6, 1.6, 1.6],
+            border: { type: 'solid', pt: 0.5, color: BRAND.tableBorder },
+            fill: { color: BRAND.surface },
+            rowH: 0.4,
+            autoPage: false
+        }
     );
 
     // --- Slide 4: Cost Avoidance ---
-    const slide4 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide4.addText('Cost Avoidance & Recovery', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    const slide4 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide4);
 
+    slide4.addText('Cost Avoidance & Recovery', {
+        x: 0.6, y: 0.55, w: 8.8, h: 0.5,
+        fontSize: 24, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+
+    const costHeaderRow = [
+        { text: 'Category', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', fill: { color: BRAND.white } } },
+        { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial', align: 'right', fill: { color: BRAND.white } } }
+    ];
     const costItems = [
         ['Reduction in Project Delays', formatCurrency(r.delaySavings)],
         ['Reduction in Rework & Errors', formatCurrency(r.reworkSavings)],
         ['Revenue Risk Recovered', formatCurrency(r.revenueSavings)],
-        ['Tool Consolidation Savings', formatCurrency(r.toolConsolidation)],
+        ['Tool Consolidation Savings', formatCurrency(r.toolConsolidation)]
     ];
     const costRows = costItems.map(([cat, val]) => [
-        { text: cat, options: { fontSize: 11, color: BRAND.textLight, fontFace: 'Arial' } },
-        { text: val, options: { fontSize: 11, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+        { text: cat, options: { fontSize: 11, color: BRAND.dark, fontFace: 'Arial' } },
+        { text: val, options: { fontSize: 11, color: BRAND.dark, fontFace: 'Arial', align: 'right' } }
     ]);
     costRows.push([
         { text: 'TOTAL COST AVOIDANCE', options: { fontSize: 11, bold: true, color: BRAND.green, fontFace: 'Arial' } },
@@ -1186,20 +1335,33 @@ function exportROIPPTX() {
     ]);
 
     slide4.addTable(
-        [
-            [
-                { text: 'Category', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial' } },
-                { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } }
-            ],
-            ...costRows
-        ],
-        { x: 0.6, y: 1.0, w: 8.8, colW: [6.0, 2.8], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.45 }
+        [costHeaderRow, ...costRows],
+        {
+            x: 0.5, y: 1.2, w: 9.0, colW: [6.2, 2.8],
+            border: { type: 'solid', pt: 0.5, color: BRAND.tableBorder },
+            fill: { color: BRAND.surface },
+            rowH: 0.45,
+            autoPage: false
+        }
     );
 
     // --- Slide 5: 3-Year Projection ---
-    const slide5 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide5.addText('3-Year Value Projection', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    const slide5 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide5);
 
+    slide5.addText('3-Year Value Projection', {
+        x: 0.6, y: 0.55, w: 8.8, h: 0.5,
+        fontSize: 24, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
+
+    const projHeaderRow = ['', 'Savings', 'Investment', 'Net Benefit'].map((h, i) => ({
+        text: h,
+        options: {
+            fontSize: 9, bold: true, color: BRAND.muted, fontFace: 'Arial',
+            align: i === 0 ? 'left' : 'right',
+            fill: { color: BRAND.white }
+        }
+    }));
     const projRows = [
         ['Year 1 (70% adoption)', formatCurrency(r.totalAnnualSavings * 0.7), formatCurrency(r.annualInvestment), formatCurrency(year1Net)],
         ['Year 2 (90% adoption)', formatCurrency(r.totalAnnualSavings * 0.9), formatCurrency(r.annualInvestment), formatCurrency(year2Net)],
@@ -1210,29 +1372,41 @@ function exportROIPPTX() {
         options: {
             fontSize: 11,
             bold: idx === 3,
-            color: ci === 0 ? BRAND.textLight : ci === 3 ? BRAND.green : BRAND.textLight,
+            color: (idx === 3 && ci === 3) ? BRAND.green : BRAND.dark,
             fontFace: 'Arial',
             align: ci === 0 ? 'left' : 'right'
         }
     })));
 
     slide5.addTable(
-        [
-            ['', 'Savings', 'Investment', 'Net Benefit'].map((h, i) => ({
-                text: h, options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: i === 0 ? 'left' : 'right' }
-            })),
-            ...projRows
-        ],
-        { x: 0.6, y: 1.0, w: 8.8, colW: [3.2, 2.0, 2.0, 1.6], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.45 }
+        [projHeaderRow, ...projRows],
+        {
+            x: 0.5, y: 1.2, w: 9.0, colW: [3.2, 2.0, 2.0, 1.8],
+            border: { type: 'solid', pt: 0.5, color: BRAND.tableBorder },
+            fill: { color: BRAND.surface },
+            rowH: 0.45,
+            autoPage: false
+        }
     );
 
+    slide5.addShape(pptx.ShapeType.roundRect, {
+        x: 2.0, y: 3.8, w: 6.0, h: 0.6,
+        fill: { color: BRAND.surface }, rectRadius: 0.08,
+        line: { color: BRAND.green, width: 1 }
+    });
     slide5.addText(`Cumulative 3-Year Net Benefit: ${formatCurrency(cumulative3Year)}`, {
-        x: 0.6, y: 3.8, w: 8.8, h: 0.5, fontSize: 18, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'center'
+        x: 2.0, y: 3.8, w: 6.0, h: 0.6,
+        fontSize: 16, bold: true, color: BRAND.dark, fontFace: 'Arial', align: 'center', valign: 'middle'
     });
 
     // --- Slide 6: Recommended Next Steps ---
-    const slide6 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
-    slide6.addText('Recommended Next Steps', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    const slide6 = pptx.addSlide({ masterName: 'WRIKE_BRAND' });
+    addBrandChrome(slide6);
+
+    slide6.addText('Recommended Next Steps', {
+        x: 0.6, y: 0.55, w: 8.8, h: 0.5,
+        fontSize: 24, bold: true, color: BRAND.dark, fontFace: 'Arial'
+    });
 
     const steps = [
         { num: '1', title: 'Validate Assumptions', desc: 'Review the hours and cost estimates with your team leads to confirm they reflect your reality.' },
@@ -1242,12 +1416,28 @@ function exportROIPPTX() {
     ];
 
     steps.forEach((step, i) => {
-        const y = 1.1 + i * 1.2;
-        slide6.addShape(pptx.ShapeType.roundRect, { x: 0.6, y: y, w: 8.8, h: 1.0, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
-        slide6.addShape(pptx.ShapeType.ellipse, { x: 0.9, y: y + 0.25, w: 0.5, h: 0.5, fill: { color: BRAND.green } });
-        slide6.addText(step.num, { x: 0.9, y: y + 0.25, w: 0.5, h: 0.5, fontSize: 16, bold: true, color: BRAND.dark, fontFace: 'Arial', align: 'center', valign: 'middle' });
-        slide6.addText(step.title, { x: 1.7, y: y + 0.15, w: 7.4, h: 0.35, fontSize: 14, bold: true, color: BRAND.white, fontFace: 'Arial' });
-        slide6.addText(step.desc, { x: 1.7, y: y + 0.5, w: 7.4, h: 0.35, fontSize: 11, color: BRAND.textMuted, fontFace: 'Arial' });
+        const y = 1.3 + i * 1.25;
+        slide6.addShape(pptx.ShapeType.roundRect, {
+            x: 0.5, y: y, w: 9.0, h: 1.05,
+            fill: { color: BRAND.surface }, rectRadius: 0.08,
+            line: { color: BRAND.tableBorder, width: 0.5 }
+        });
+        slide6.addShape(pptx.ShapeType.ellipse, {
+            x: 0.8, y: y + 0.27, w: 0.5, h: 0.5,
+            fill: { color: BRAND.green }
+        });
+        slide6.addText(step.num, {
+            x: 0.8, y: y + 0.27, w: 0.5, h: 0.5,
+            fontSize: 16, bold: true, color: BRAND.white, fontFace: 'Arial', align: 'center', valign: 'middle'
+        });
+        slide6.addText(step.title, {
+            x: 1.6, y: y + 0.15, w: 7.6, h: 0.35,
+            fontSize: 14, bold: true, color: BRAND.dark, fontFace: 'Arial'
+        });
+        slide6.addText(step.desc, {
+            x: 1.6, y: y + 0.55, w: 7.6, h: 0.35,
+            fontSize: 11, color: BRAND.muted, fontFace: 'Arial'
+        });
     });
 
     pptx.writeFile({ fileName: `${r.company.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Business_Case.pptx` })
@@ -1269,6 +1459,112 @@ function exportROIPDFDirect() {
     printWindow.document.write(generatePDFHTML(r, 'roi'));
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 500);
+}
+
+// ---- AI Agent ROI Calculator ----
+const AI_USE_CASES = [
+    { id: 'reporting', label: 'Status Updates & Reporting', icon: 'fa-file-alt' },
+    { id: 'tasks', label: 'Task Creation & Assignment', icon: 'fa-tasks' },
+    { id: 'research', label: 'Information Retrieval & Research', icon: 'fa-search' },
+    { id: 'content', label: 'Content Drafting & Review', icon: 'fa-pen-fancy' },
+    { id: 'risk', label: 'Risk Detection & Alerts', icon: 'fa-exclamation-triangle' },
+    { id: 'meetings', label: 'Meeting Prep & Follow-ups', icon: 'fa-calendar-check' }
+];
+
+function calculateAIROI() {
+    const workers = parseInt(document.getElementById('ai-workers').value) || 100;
+    const salary = parseFloat(document.getElementById('ai-salary').value) || 95000;
+    const annualHours = parseInt(document.getElementById('ai-annual-hours').value) || 2080;
+    const hourlyRate = salary / annualHours;
+
+    let totalWeeklyHoursSaved = 0;
+    const breakdownItems = [];
+
+    AI_USE_CASES.forEach(uc => {
+        const hoursEl = document.getElementById('ai-uc-' + uc.id);
+        const pctEl = document.getElementById('ai-uc-' + uc.id + '-pct');
+        if (!hoursEl || !pctEl) return;
+        const currentHours = parseFloat(hoursEl.value) || 0;
+        const automationPct = parseFloat(pctEl.value) / 100;
+        const hoursSaved = currentHours * automationPct;
+        const annualSavings = hoursSaved * 52 * workers * hourlyRate;
+        totalWeeklyHoursSaved += hoursSaved;
+
+        breakdownItems.push({
+            label: uc.label,
+            icon: uc.icon,
+            hoursSaved: hoursSaved,
+            annualSavings: annualSavings,
+            pct: automationPct * 100
+        });
+    });
+
+    const totalProductivitySavings = breakdownItems.reduce((s, i) => s + i.annualSavings, 0);
+    const totalAnnualHoursSaved = totalWeeklyHoursSaved * 52 * workers;
+
+    const errorCost = parseFloat(document.getElementById('ai-error-cost').value) || 0;
+    const errorReduction = parseFloat(document.getElementById('ai-error-reduction').value) / 100;
+    const speedRevenue = parseFloat(document.getElementById('ai-speed-revenue').value) || 0;
+    const speedImprovement = parseFloat(document.getElementById('ai-speed-improvement').value) / 100;
+
+    const qualitySavings = (errorCost * errorReduction) + (speedRevenue * speedImprovement);
+    const totalValue = totalProductivitySavings + qualitySavings;
+
+    const fteEquivalent = annualHours > 0 ? (totalAnnualHoursSaved / annualHours) : 0;
+    const valuePerEmployee = workers > 0 ? totalValue / workers : 0;
+    const daysRecovered = totalAnnualHoursSaved / 8;
+
+    document.getElementById('ai-kpi-hours').textContent = totalWeeklyHoursSaved.toFixed(1) + ' hrs/week';
+    document.getElementById('ai-kpi-total-hours').textContent = Math.round(totalAnnualHoursSaved).toLocaleString() + ' hours';
+    document.getElementById('ai-kpi-prod-savings').textContent = formatCurrency(totalProductivitySavings);
+    document.getElementById('ai-kpi-quality-savings').textContent = formatCurrency(qualitySavings);
+    document.getElementById('ai-kpi-total-value').textContent = formatCurrency(totalValue);
+
+    document.getElementById('ai-equiv-fte').textContent = fteEquivalent.toFixed(1);
+    document.getElementById('ai-equiv-per-user').textContent = formatCurrencyShort(valuePerEmployee);
+    document.getElementById('ai-equiv-days').textContent = Math.round(daysRecovered).toLocaleString();
+
+    const breakdownList = document.getElementById('ai-breakdown-list');
+    const maxSavings = Math.max(...breakdownItems.map(i => i.annualSavings), 1);
+    breakdownList.innerHTML = breakdownItems.map(item => {
+        const barPct = (item.annualSavings / maxSavings) * 100;
+        return `
+            <div class="ai-breakdown-item">
+                <div class="ai-bd-label">
+                    <i class="fas ${item.icon}"></i>
+                    <span>${item.label}</span>
+                </div>
+                <div class="ai-bd-bar-container">
+                    <div class="ai-bd-bar" style="width: ${barPct}%"></div>
+                </div>
+                <div class="ai-bd-values">
+                    <span class="ai-bd-hours">${item.hoursSaved.toFixed(1)}h/wk</span>
+                    <span class="ai-bd-savings">${formatCurrencyShort(item.annualSavings)}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function resetAICalculator() {
+    document.getElementById('ai-workers').value = 100;
+    document.getElementById('ai-salary').value = 95000;
+    document.getElementById('ai-annual-hours').value = 2080;
+    const defaults = { reporting: [3, 70], tasks: [2.5, 60], research: [4, 55], content: [3, 50], risk: [2, 65], meetings: [2.5, 60] };
+    Object.keys(defaults).forEach(id => {
+        const hoursEl = document.getElementById('ai-uc-' + id);
+        const pctEl = document.getElementById('ai-uc-' + id + '-pct');
+        if (hoursEl) hoursEl.value = defaults[id][0];
+        if (pctEl) { pctEl.value = defaults[id][1]; syncSlider(pctEl); }
+    });
+    document.getElementById('ai-error-cost').value = 120000;
+    document.getElementById('ai-error-reduction').value = 30;
+    document.getElementById('ai-speed-revenue').value = 200000;
+    document.getElementById('ai-speed-improvement').value = 20;
+    syncSlider(document.getElementById('ai-error-reduction'));
+    syncSlider(document.getElementById('ai-speed-improvement'));
+    calculateAIROI();
+    showToast('AI Calculator reset', 'info');
 }
 
 // ---- Utility Functions ----
@@ -1317,4 +1613,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     updateQuote();
+    calculateAIROI();
 });
