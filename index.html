@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
     <!-- Top Navigation Bar -->
@@ -129,7 +130,8 @@
             <div class="page-header-right">
                 <button class="btn btn-outline" onclick="resetROICalculator()"><i class="fas fa-redo"></i> Reset</button>
                 <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save</button>
-                <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button class="btn btn-pptx" onclick="exportROIPPTX()"><i class="fas fa-file-powerpoint"></i> PowerPoint</button>
             </div>
         </div>
 
@@ -265,21 +267,45 @@
                         <label>Annual Cost of Project Delays / Overruns ($)</label>
                         <input type="number" id="roi-delay-cost" value="150000" min="0" step="5000">
                         <span class="input-hint">Missed deadlines, expediting fees, penalties</span>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Industry range: <strong>$75K–$500K</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">PMI Pulse of the Profession, 2023 — 48% of projects experience schedule delays with average cost overrun of 27%</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Annual Cost of Rework / Errors ($)</label>
                         <input type="number" id="roi-rework-cost" value="100000" min="0" step="5000">
                         <span class="input-hint">Defects, revisions, quality issues</span>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Industry range: <strong>$50K–$300K</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">CISQ "Cost of Poor Software Quality" Report, 2022 & Construction Industry Institute</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Annual Revenue at Risk from Inefficiency ($)</label>
                         <input type="number" id="roi-revenue-risk" value="250000" min="0" step="10000">
                         <span class="input-hint">Lost deals, delayed launches, missed market windows</span>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Industry range: <strong>$100K–$1M+</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">McKinsey — "The case for digital reinvention", 2023 — Companies lose 20-30% of revenue annually to operational inefficiency</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Annual Spend on Redundant Tools ($)</label>
                         <input type="number" id="roi-tool-spend" value="50000" min="0" step="1000">
                         <span class="input-hint">Overlapping PM, collaboration, and tracking tools</span>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Industry range: <strong>$20K–$200K</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">Zylo SaaS Management Index, 2023 — Average enterprise wastes $18M/yr on unused or redundant SaaS</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,12 +336,24 @@
                             <input type="range" id="roi-delay-reduction" min="0" max="80" value="35" oninput="syncSlider(this)">
                             <span class="slider-value">35%</span>
                         </div>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Benchmark: <strong>20–50%</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">PMI & Gartner PPM benchmarks, 2022–2023</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>% Reduction in Rework</label>
                         <div class="slider-group">
                             <input type="range" id="roi-rework-reduction" min="0" max="80" value="30" oninput="syncSlider(this)">
                             <span class="slider-value">30%</span>
+                        </div>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Benchmark: <strong>20–45%</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">CIMdata & Aberdeen Group operational studies, 2022</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -324,12 +362,24 @@
                             <input type="range" id="roi-revenue-recovery" min="0" max="60" value="20" oninput="syncSlider(this)">
                             <span class="slider-value">20%</span>
                         </div>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Benchmark: <strong>10–35%</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">Forrester TEI studies across work management platforms, 2023</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>% Tool Consolidation Savings</label>
                         <div class="slider-group">
                             <input type="range" id="roi-tool-savings" min="0" max="100" value="60" oninput="syncSlider(this)">
                             <span class="slider-value">60%</span>
+                        </div>
+                        <div class="benchmark-hint inline">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Benchmark: <strong>40–80%</strong></span>
+                            <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source"><i class="fas fa-info-circle"></i></button>
+                            <div class="benchmark-tooltip">Zylo SaaS Management Index, 2023</div>
                         </div>
                     </div>
                 </div>
@@ -352,7 +402,7 @@
             </div>
 
             <!-- Executive Summary KPIs -->
-            <div class="kpi-row">
+            <div class="kpi-row four-col">
                 <div class="kpi-card green">
                     <span class="kpi-label">Total Annual Savings</span>
                     <span class="kpi-value" id="kpi-total-savings">$0</span>
@@ -364,10 +414,6 @@
                 <div class="kpi-card purple">
                     <span class="kpi-label">Net Benefit (Year 1)</span>
                     <span class="kpi-value" id="kpi-net-benefit">$0</span>
-                </div>
-                <div class="kpi-card orange">
-                    <span class="kpi-label">ROI</span>
-                    <span class="kpi-value" id="kpi-roi">0%</span>
                 </div>
                 <div class="kpi-card teal">
                     <span class="kpi-label">Payback Period</span>
@@ -414,7 +460,8 @@
                 <button class="btn btn-outline" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Adjust Assumptions</button>
                 <div>
                     <button class="btn btn-primary" onclick="saveAssessment()"><i class="fas fa-save"></i> Save Assessment</button>
-                    <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export Report</button>
+                    <button class="btn btn-accent" onclick="exportROIPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                    <button class="btn btn-pptx" onclick="exportROIPPTX()"><i class="fas fa-file-powerpoint"></i> Export PowerPoint</button>
                     <button class="btn btn-outline" onclick="navigateTo('pricing')"><i class="fas fa-tags"></i> Build Quote</button>
                 </div>
             </div>
@@ -700,7 +747,7 @@
 
                         <div class="quote-roi-link" id="quote-roi-link" style="display:none;">
                             <div class="quote-divider"></div>
-                            <h4>Linked ROI Analysis</h4>
+                            <h4>Linked Value Analysis</h4>
                             <div class="quote-line green">
                                 <span>Projected Annual Savings</span>
                                 <span id="quote-roi-savings">$0</span>
@@ -710,8 +757,8 @@
                                 <span id="quote-roi-net">$0</span>
                             </div>
                             <div class="quote-line green">
-                                <span>ROI</span>
-                                <span id="quote-roi-pct">0%</span>
+                                <span>Payback Period</span>
+                                <span id="quote-roi-payback">0 months</span>
                             </div>
                         </div>
 

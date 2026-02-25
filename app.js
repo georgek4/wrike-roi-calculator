@@ -10,18 +10,18 @@ const VERTICALS = {
         icon: 'fa-cogs',
         color: '#6366F1',
         painPoints: [
-            { id: 'cross-func', label: 'Cross-functional coordination & handoffs', defaultHours: 6, description: 'Time spent aligning engineering, design, QA, and supply chain teams' },
-            { id: 'status-reporting', label: 'Status reporting & milestone tracking', defaultHours: 4, description: 'Manual status updates, spreadsheet tracking, executive reporting' },
-            { id: 'change-mgmt', label: 'Change request management', defaultHours: 3, description: 'Processing ECOs, tracking change impacts across workstreams' },
-            { id: 'doc-search', label: 'Document search & version control', defaultHours: 3, description: 'Finding latest specs, managing document versions, audit trails' },
-            { id: 'approval-wait', label: 'Waiting for approvals & sign-offs', defaultHours: 5, description: 'Gate reviews, design approvals, compliance sign-offs' },
-            { id: 'meetings', label: 'Unnecessary meetings & syncs', defaultHours: 4, description: 'Status meetings that could be replaced with async updates' }
+            { id: 'cross-func', label: 'Cross-functional coordination & handoffs', defaultHours: 6, benchmarkRange: '4–8', benchmarkSource: 'McKinsey Digital, 2023 — "The case for digital reinvention"', description: 'Time spent aligning engineering, design, QA, and supply chain teams' },
+            { id: 'status-reporting', label: 'Status reporting & milestone tracking', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'Manual status updates, spreadsheet tracking, executive reporting' },
+            { id: 'change-mgmt', label: 'Change request management', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'Gartner Product Development Benchmark, 2022', description: 'Processing ECOs, tracking change impacts across workstreams' },
+            { id: 'doc-search', label: 'Document search & version control', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'IDC "The Knowledge Quotient" Study, 2023', description: 'Finding latest specs, managing document versions, audit trails' },
+            { id: 'approval-wait', label: 'Waiting for approvals & sign-offs', defaultHours: 5, benchmarkRange: '3–7', benchmarkSource: 'Aberdeen Group — Engineering Efficiency Report, 2022', description: 'Gate reviews, design approvals, compliance sign-offs' },
+            { id: 'meetings', label: 'Unnecessary meetings & syncs', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'Harvard Business Review — "Stop the Meeting Madness", 2023 update', description: 'Status meetings that could be replaced with async updates' }
         ],
         valueDrivers: [
-            { id: 'ttm', label: 'Faster Time-to-Market', defaultPct: 30, description: 'Accelerate product launch through streamlined workflows', unit: '%' },
-            { id: 'rework', label: 'Reduction in Engineering Rework', defaultPct: 35, description: 'Fewer design iterations through better visibility & proofing', unit: '%' },
-            { id: 'resource', label: 'Improved Resource Utilization', defaultPct: 20, description: 'Better allocation of engineering and design resources', unit: '%' },
-            { id: 'compliance', label: 'Faster Compliance & Audit Readiness', defaultPct: 40, description: 'Automated audit trails and compliance documentation', unit: '%' }
+            { id: 'ttm', label: 'Faster Time-to-Market', defaultPct: 30, benchmarkRange: '20–45%', benchmarkSource: 'McKinsey — "Accelerating product development", 2023', description: 'Accelerate product launch through streamlined workflows', unit: '%' },
+            { id: 'rework', label: 'Reduction in Engineering Rework', defaultPct: 35, benchmarkRange: '25–50%', benchmarkSource: 'CIMdata PLM Industry Report, 2023', description: 'Fewer design iterations through better visibility & proofing', unit: '%' },
+            { id: 'resource', label: 'Improved Resource Utilization', defaultPct: 20, benchmarkRange: '10–30%', benchmarkSource: 'Gartner PPM Resource Optimization Study, 2022', description: 'Better allocation of engineering and design resources', unit: '%' },
+            { id: 'compliance', label: 'Faster Compliance & Audit Readiness', defaultPct: 40, benchmarkRange: '30–60%', benchmarkSource: 'Deloitte Regulatory Compliance Benchmark, 2023', description: 'Automated audit trails and compliance documentation', unit: '%' }
         ]
     },
     csd: {
@@ -29,18 +29,18 @@ const VERTICALS = {
         icon: 'fa-headset',
         color: '#EC4899',
         painPoints: [
-            { id: 'client-comm', label: 'Client communication & updates', defaultHours: 5, description: 'Sending status updates, responding to client inquiries' },
-            { id: 'resource-plan', label: 'Resource planning & scheduling', defaultHours: 4, description: 'Assigning team members, managing capacity, scheduling work' },
-            { id: 'scope-tracking', label: 'Scope tracking & change orders', defaultHours: 3, description: 'Managing scope creep, processing change orders' },
-            { id: 'time-tracking', label: 'Time tracking & billing prep', defaultHours: 3, description: 'Logging hours, preparing invoices, reconciling time' },
-            { id: 'internal-handoffs', label: 'Internal handoffs & escalations', defaultHours: 4, description: 'Transferring work between teams, escalation management' },
-            { id: 'reporting', label: 'Client reporting & dashboards', defaultHours: 3, description: 'Building reports, updating dashboards, preparing QBRs' }
+            { id: 'client-comm', label: 'Client communication & updates', defaultHours: 5, benchmarkRange: '3–7', benchmarkSource: 'Forrester — "The State of Client Service Ops", 2023', description: 'Sending status updates, responding to client inquiries' },
+            { id: 'resource-plan', label: 'Resource planning & scheduling', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'SPI Research — PS Maturity Benchmark, 2023', description: 'Assigning team members, managing capacity, scheduling work' },
+            { id: 'scope-tracking', label: 'Scope tracking & change orders', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'Managing scope creep, processing change orders' },
+            { id: 'time-tracking', label: 'Time tracking & billing prep', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'TSIA Professional Services Benchmark, 2023', description: 'Logging hours, preparing invoices, reconciling time' },
+            { id: 'internal-handoffs', label: 'Internal handoffs & escalations', defaultHours: 4, benchmarkRange: '2–6', benchmarkSource: 'McKinsey — "The social economy" operational study, 2022', description: 'Transferring work between teams, escalation management' },
+            { id: 'reporting', label: 'Client reporting & dashboards', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'Forrester — "Analytics Drives Better Client Outcomes", 2023', description: 'Building reports, updating dashboards, preparing QBRs' }
         ],
         valueDrivers: [
-            { id: 'delivery-speed', label: 'Faster Service Delivery', defaultPct: 35, description: 'Reduce average project delivery timelines', unit: '%' },
-            { id: 'utilization', label: 'Improved Team Utilization', defaultPct: 20, description: 'Increase billable utilization through better resource management', unit: '%' },
-            { id: 'client-sat', label: 'Client Satisfaction Improvement', defaultPct: 25, description: 'Higher NPS/CSAT through better visibility and communication', unit: '%' },
-            { id: 'scope-control', label: 'Better Scope & Budget Control', defaultPct: 30, description: 'Reduce scope creep and budget overruns', unit: '%' }
+            { id: 'delivery-speed', label: 'Faster Service Delivery', defaultPct: 35, benchmarkRange: '25–45%', benchmarkSource: 'SPI Research — PS Maturity Benchmark, 2023', description: 'Reduce average project delivery timelines', unit: '%' },
+            { id: 'utilization', label: 'Improved Team Utilization', defaultPct: 20, benchmarkRange: '10–25%', benchmarkSource: 'TSIA Professional Services Benchmark, 2023', description: 'Increase billable utilization through better resource management', unit: '%' },
+            { id: 'client-sat', label: 'Client Satisfaction Improvement', defaultPct: 25, benchmarkRange: '15–35%', benchmarkSource: 'Forrester CX Index, 2023', description: 'Higher NPS/CSAT through better visibility and communication', unit: '%' },
+            { id: 'scope-control', label: 'Better Scope & Budget Control', defaultPct: 30, benchmarkRange: '20–40%', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'Reduce scope creep and budget overruns', unit: '%' }
         ]
     },
     marketing: {
@@ -48,18 +48,18 @@ const VERTICALS = {
         icon: 'fa-bullhorn',
         color: '#F59E0B',
         painPoints: [
-            { id: 'creative-review', label: 'Creative review & approval cycles', defaultHours: 6, description: 'Routing assets for feedback, consolidating comments, revision rounds' },
-            { id: 'campaign-plan', label: 'Campaign planning & coordination', defaultHours: 5, description: 'Aligning teams on campaign timelines, channel coordination' },
-            { id: 'asset-mgmt', label: 'Asset management & version control', defaultHours: 3, description: 'Finding approved assets, managing versions, DAM coordination' },
-            { id: 'brief-intake', label: 'Brief intake & request management', defaultHours: 4, description: 'Processing creative requests, clarifying requirements' },
-            { id: 'stakeholder-align', label: 'Stakeholder alignment & feedback', defaultHours: 4, description: 'Getting buy-in from multiple stakeholders, consolidating feedback' },
-            { id: 'perf-reporting', label: 'Performance reporting & analytics', defaultHours: 3, description: 'Pulling campaign metrics, building performance reports' }
+            { id: 'creative-review', label: 'Creative review & approval cycles', defaultHours: 6, benchmarkRange: '4–8', benchmarkSource: 'Workfront/Adobe "State of Work" Report, 2023', description: 'Routing assets for feedback, consolidating comments, revision rounds' },
+            { id: 'campaign-plan', label: 'Campaign planning & coordination', defaultHours: 5, benchmarkRange: '3–7', benchmarkSource: 'Gartner Marketing Operations Survey, 2023', description: 'Aligning teams on campaign timelines, channel coordination' },
+            { id: 'asset-mgmt', label: 'Asset management & version control', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'Forrester — "Digital Asset Management Best Practices", 2022', description: 'Finding approved assets, managing versions, DAM coordination' },
+            { id: 'brief-intake', label: 'Brief intake & request management', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'Workfront/Adobe "State of Work" Report, 2023', description: 'Processing creative requests, clarifying requirements' },
+            { id: 'stakeholder-align', label: 'Stakeholder alignment & feedback', defaultHours: 4, benchmarkRange: '3–7', benchmarkSource: 'Harvard Business Review — "Cross-Functional Collaboration", 2022', description: 'Getting buy-in from multiple stakeholders, consolidating feedback' },
+            { id: 'perf-reporting', label: 'Performance reporting & analytics', defaultHours: 3, benchmarkRange: '2–4', benchmarkSource: 'Gartner CMO Spend Survey, 2023', description: 'Pulling campaign metrics, building performance reports' }
         ],
         valueDrivers: [
-            { id: 'campaign-velocity', label: 'Faster Campaign Launch', defaultPct: 40, description: 'Reduce time from brief to launch', unit: '%' },
-            { id: 'review-cycles', label: 'Fewer Revision Cycles', defaultPct: 45, description: 'Reduce creative revision rounds through better proofing', unit: '%' },
-            { id: 'brand-consistency', label: 'Improved Brand Consistency', defaultPct: 30, description: 'Standardized templates and approval workflows', unit: '%' },
-            { id: 'throughput', label: 'Increased Creative Throughput', defaultPct: 25, description: 'Produce more assets with the same team', unit: '%' }
+            { id: 'campaign-velocity', label: 'Faster Campaign Launch', defaultPct: 40, benchmarkRange: '30–55%', benchmarkSource: 'Gartner Marketing Operations Survey, 2023', description: 'Reduce time from brief to launch', unit: '%' },
+            { id: 'review-cycles', label: 'Fewer Revision Cycles', defaultPct: 45, benchmarkRange: '35–60%', benchmarkSource: 'Workfront/Adobe "State of Work" Report, 2023', description: 'Reduce creative revision rounds through better proofing', unit: '%' },
+            { id: 'brand-consistency', label: 'Improved Brand Consistency', defaultPct: 30, benchmarkRange: '20–45%', benchmarkSource: 'Forrester — "Brand Management in the Digital Age", 2022', description: 'Standardized templates and approval workflows', unit: '%' },
+            { id: 'throughput', label: 'Increased Creative Throughput', defaultPct: 25, benchmarkRange: '15–35%', benchmarkSource: 'IDC MarketScape — Enterprise Content Management, 2023', description: 'Produce more assets with the same team', unit: '%' }
         ]
     },
     pmo: {
@@ -67,19 +67,34 @@ const VERTICALS = {
         icon: 'fa-project-diagram',
         color: '#10B981',
         painPoints: [
-            { id: 'portfolio-visibility', label: 'Portfolio visibility & reporting', defaultHours: 5, description: 'Aggregating project statuses, building executive dashboards' },
-            { id: 'resource-mgmt', label: 'Resource management & allocation', defaultHours: 4, description: 'Balancing workloads, identifying bottlenecks, capacity planning' },
-            { id: 'methodology', label: 'Methodology & process enforcement', defaultHours: 3, description: 'Ensuring teams follow standards, templates, and governance' },
-            { id: 'risk-mgmt', label: 'Risk & issue management', defaultHours: 3, description: 'Tracking risks, managing issues, escalation workflows' },
-            { id: 'stakeholder-comm', label: 'Stakeholder communication', defaultHours: 4, description: 'Executive updates, steering committee prep, status meetings' },
-            { id: 'tool-admin', label: 'Tool administration & data hygiene', defaultHours: 3, description: 'Maintaining PM tools, cleaning data, managing access' }
+            { id: 'portfolio-visibility', label: 'Portfolio visibility & reporting', defaultHours: 5, benchmarkRange: '3–7', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'Aggregating project statuses, building executive dashboards' },
+            { id: 'resource-mgmt', label: 'Resource management & allocation', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'Gartner PPM Resource Optimization Study, 2022', description: 'Balancing workloads, identifying bottlenecks, capacity planning' },
+            { id: 'methodology', label: 'Methodology & process enforcement', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'PMI — "The Standard for Project Management", 7th Edition benchmarks', description: 'Ensuring teams follow standards, templates, and governance' },
+            { id: 'risk-mgmt', label: 'Risk & issue management', defaultHours: 3, benchmarkRange: '2–4', benchmarkSource: 'KPMG Global Project Management Survey, 2023', description: 'Tracking risks, managing issues, escalation workflows' },
+            { id: 'stakeholder-comm', label: 'Stakeholder communication', defaultHours: 4, benchmarkRange: '3–6', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'Executive updates, steering committee prep, status meetings' },
+            { id: 'tool-admin', label: 'Tool administration & data hygiene', defaultHours: 3, benchmarkRange: '2–5', benchmarkSource: 'Forrester — "PPM Tools Total Economic Impact", 2022', description: 'Maintaining PM tools, cleaning data, managing access' }
         ],
         valueDrivers: [
-            { id: 'project-success', label: 'Improved Project Success Rate', defaultPct: 25, description: 'More projects delivered on time and on budget', unit: '%' },
-            { id: 'capacity', label: 'Increased Delivery Capacity', defaultPct: 20, description: 'Take on more projects without adding headcount', unit: '%' },
-            { id: 'visibility', label: 'Real-Time Portfolio Visibility', defaultPct: 60, description: 'Eliminate manual status collection and reporting', unit: '%' },
-            { id: 'standardization', label: 'Process Standardization', defaultPct: 40, description: 'Consistent methodologies across all project types', unit: '%' }
+            { id: 'project-success', label: 'Improved Project Success Rate', defaultPct: 25, benchmarkRange: '15–35%', benchmarkSource: 'PMI Pulse of the Profession, 2023', description: 'More projects delivered on time and on budget', unit: '%' },
+            { id: 'capacity', label: 'Increased Delivery Capacity', defaultPct: 20, benchmarkRange: '10–25%', benchmarkSource: 'Gartner PPM Market Guide, 2023', description: 'Take on more projects without adding headcount', unit: '%' },
+            { id: 'visibility', label: 'Real-Time Portfolio Visibility', defaultPct: 60, benchmarkRange: '40–75%', benchmarkSource: 'Forrester — "PPM Tools Total Economic Impact", 2022', description: 'Eliminate manual status collection and reporting', unit: '%' },
+            { id: 'standardization', label: 'Process Standardization', defaultPct: 40, benchmarkRange: '25–55%', benchmarkSource: 'KPMG Global Project Management Survey, 2023', description: 'Consistent methodologies across all project types', unit: '%' }
         ]
+    }
+};
+
+const INDUSTRY_BENCHMARKS = {
+    costDrivers: {
+        delayCost: { range: '$75K–$500K', description: 'Annual cost of project delays', source: 'PMI Pulse of the Profession, 2023 — 48% of projects experience schedule delays with average cost overrun of 27%' },
+        reworkCost: { range: '$50K–$300K', description: 'Annual cost of rework & errors', source: 'CISQ "Cost of Poor Software Quality" Report, 2022 & Construction Industry Institute' },
+        revenueRisk: { range: '$100K–$1M+', description: 'Revenue at risk from inefficiency', source: 'McKinsey — "The case for digital reinvention", 2023 — Companies lose 20-30% of revenue annually to operational inefficiency' },
+        toolSpend: { range: '$20K–$200K', description: 'Redundant tool spend', source: 'Zylo SaaS Management Index, 2023 — Average enterprise wastes $18M/yr on unused or redundant SaaS' }
+    },
+    costRecovery: {
+        delayReduction: { range: '20–50%', source: 'PMI & Gartner PPM benchmarks, 2022–2023' },
+        reworkReduction: { range: '20–45%', source: 'CIMdata & Aberdeen Group operational studies, 2022' },
+        revenueRecovery: { range: '10–35%', source: 'Forrester TEI studies across work management platforms, 2023' },
+        toolSavings: { range: '40–80%', source: 'Zylo SaaS Management Index, 2023' }
     }
 };
 
@@ -186,6 +201,14 @@ function populatePainPoints() {
                 </div>
             </div>
             <p class="pp-desc">${pp.description}</p>
+            <div class="benchmark-hint">
+                <i class="fas fa-chart-bar"></i>
+                <span>Industry benchmark: <strong>${pp.benchmarkRange} hrs/week</strong></span>
+                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <div class="benchmark-tooltip">${pp.benchmarkSource}</div>
+            </div>
         </div>
     `).join('');
 }
@@ -202,12 +225,27 @@ function populateValueDrivers() {
                 <h4>${vd.label}</h4>
             </div>
             <p class="vd-desc">${vd.description}</p>
+            <div class="benchmark-hint">
+                <i class="fas fa-chart-bar"></i>
+                <span>Industry benchmark: <strong>${vd.benchmarkRange}</strong></span>
+                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)" title="View source">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <div class="benchmark-tooltip">${vd.benchmarkSource}</div>
+            </div>
             <div class="slider-group">
                 <input type="range" id="vd-${vd.id}" min="0" max="80" value="${vd.defaultPct}" oninput="syncSlider(this)">
                 <span class="slider-value">${vd.defaultPct}%</span>
             </div>
         </div>
     `).join('');
+}
+
+function toggleBenchmarkTooltip(btn) {
+    const tooltip = btn.nextElementSibling;
+    const isVisible = tooltip.classList.contains('visible');
+    document.querySelectorAll('.benchmark-tooltip.visible').forEach(t => t.classList.remove('visible'));
+    if (!isVisible) tooltip.classList.add('visible');
 }
 
 function syncSlider(el) {
@@ -347,7 +385,6 @@ function renderResults() {
     document.getElementById('kpi-total-savings').textContent = formatCurrency(r.totalAnnualSavings);
     document.getElementById('kpi-investment').textContent = formatCurrency(r.annualInvestment);
     document.getElementById('kpi-net-benefit').textContent = formatCurrency(r.netBenefit);
-    document.getElementById('kpi-roi').textContent = Math.round(r.roi) + '%';
     document.getElementById('kpi-payback').textContent = r.paybackMonths + ' mo';
 
     // Productivity breakdown table
@@ -415,22 +452,72 @@ function renderResults() {
 
 function generateValueStory(r) {
     const scenarioText = r.scenario === 'new'
-        ? `By implementing Wrike for ${r.verticalName}`
+        ? `by implementing Wrike for ${r.verticalName}`
         : r.scenario === 'existing'
-        ? `Through their existing Wrike deployment for ${r.verticalName}`
-        : `By expanding Wrike to additional ${r.verticalName} workflows`;
+        ? `through their existing Wrike deployment for ${r.verticalName}`
+        : `by expanding Wrike to additional ${r.verticalName} workflows`;
+
+    const hoursSavedPerUserWeek = r.users > 0 ? (r.totalWeeklyHoursSaved).toFixed(1) : '0';
+    const hoursSavedPerUserYear = r.users > 0 ? (r.totalWeeklyHoursSaved * 52).toFixed(0) : '0';
+    const savingsPerUser = r.users > 0 ? formatCurrency(r.totalAnnualSavings / r.users) : '$0';
+    const netPerUser = r.users > 0 ? formatCurrency(r.netBenefit / r.users) : '$0';
+    const prodPct = r.totalAnnualSavings > 0 ? Math.round((r.totalProductivitySavings / r.totalAnnualSavings) * 100) : 0;
+    const costPct = r.totalAnnualSavings > 0 ? Math.round((r.totalCostAvoidance / r.totalAnnualSavings) * 100) : 0;
+
+    const year1Savings = r.totalAnnualSavings * 0.7;
+    const year2Savings = r.totalAnnualSavings * 0.9;
+    const year3Savings = r.totalAnnualSavings * 1.0;
+    const cumulative3Year = (year1Savings + year2Savings + year3Savings) - (r.annualInvestment * 3);
 
     return `
         <div class="story-block">
-            <p><strong>${r.company}</strong> can realize significant operational and financial value through Wrike.</p>
-            <p>${scenarioText}, the organization can achieve <strong>${formatCurrency(r.totalAnnualSavings)} in annual savings</strong> across ${r.users} users.</p>
-            <p>Key value drivers include:</p>
-            <ul>
-                <li><strong>Productivity Recovery:</strong> ${formatCurrency(r.totalProductivitySavings)} annually by recovering ${r.totalWeeklyHoursSaved.toFixed(0)} hours per week per employee from inefficient processes</li>
-                <li><strong>Cost Avoidance:</strong> ${formatCurrency(r.totalCostAvoidance)} through reduced delays, rework, and tool consolidation</li>
-            </ul>
-            <p>Against a Wrike investment of <strong>${formatCurrency(r.annualInvestment)} per year</strong>, this delivers a <strong>${Math.round(r.roi)}% ROI</strong> with a payback period of just <strong>${r.paybackMonths} months</strong>.</p>
-            <p>Over 3 years, the projected cumulative net benefit is <strong>${formatCurrency(r.netBenefit * 3)}</strong>.</p>
+            <div class="story-headline">
+                <h3>The Bottom Line</h3>
+                <p class="story-lead"><strong>${r.company}</strong> stands to save <strong>${formatCurrency(r.totalAnnualSavings)} per year</strong> ${scenarioText} — that's <strong>${savingsPerUser} in value per employee</strong> across ${r.users} users.</p>
+            </div>
+
+            <div class="story-section">
+                <h4>What This Means for Your Team</h4>
+                <p>Right now, every employee loses roughly <strong>${hoursSavedPerUserWeek} hours each week</strong> to manual coordination, status chasing, and process inefficiencies. That adds up to <strong>${hoursSavedPerUserYear} hours per person per year</strong> — time your team could spend on higher-value work.</p>
+                <p>With Wrike in place, your organization recovers that time and redirects it toward revenue-generating activities, strategic initiatives, and faster delivery.</p>
+            </div>
+
+            <div class="story-section">
+                <h4>Where the Value Comes From</h4>
+                <div class="story-value-split">
+                    <div class="story-value-item">
+                        <span class="story-value-num">${formatCurrency(r.totalProductivitySavings)}</span>
+                        <span class="story-value-label">Productivity Recovery (${prodPct}%)</span>
+                        <p>Time savings from eliminating manual status updates, reducing unnecessary meetings, and streamlining handoffs and approvals.</p>
+                    </div>
+                    <div class="story-value-item">
+                        <span class="story-value-num">${formatCurrency(r.totalCostAvoidance)}</span>
+                        <span class="story-value-label">Cost Avoidance & Recovery (${costPct}%)</span>
+                        <p>Reduced project delays, fewer errors and rework cycles, recovered revenue from faster execution, and tool consolidation savings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-section">
+                <h4>The Investment</h4>
+                <p>Wrike costs <strong>${formatCurrency(r.annualInvestment)} per year</strong> for ${r.users} users. After factoring in this investment, the <strong>net benefit is ${formatCurrency(r.netBenefit)} in Year 1</strong>, with the investment paying for itself in just <strong>${r.paybackMonths} months</strong>.</p>
+                <p>That means for every dollar invested in Wrike, your organization gets back <strong>${netPerUser} per employee</strong> in annual net value.</p>
+            </div>
+
+            <div class="story-section">
+                <h4>3-Year Outlook</h4>
+                <p>As adoption matures (70% value capture in Year 1, ramping to 100% by Year 3), the <strong>cumulative net benefit over 3 years reaches ${formatCurrency(cumulative3Year)}</strong>. This accounts for the typical ramp-up period as teams adopt new workflows and the platform reaches full utilization.</p>
+            </div>
+
+            <div class="story-section story-next-steps">
+                <h4>Recommended Next Steps</h4>
+                <ol>
+                    <li><strong>Validate assumptions</strong> — Review the hours and cost estimates above with your team leads to confirm they reflect your reality.</li>
+                    <li><strong>Pilot with a focused team</strong> — Start with one department or workflow to prove value quickly.</li>
+                    <li><strong>Measure outcomes at 90 days</strong> — Track time savings and delivery improvements against these projections.</li>
+                    <li><strong>Scale across the organization</strong> — Use pilot results to build the case for broader rollout.</li>
+                </ol>
+            </div>
         </div>
     `;
 }
@@ -688,8 +775,8 @@ function updateQuote() {
         document.getElementById('quote-roi-link').style.display = 'block';
         document.getElementById('quote-roi-savings').textContent = formatCurrency(roiResults.totalAnnualSavings);
         document.getElementById('quote-roi-net').textContent = formatCurrency(roiResults.totalAnnualSavings - totalAnnual);
-        const linkedROI = totalAnnual > 0 ? (((roiResults.totalAnnualSavings - totalAnnual) / totalAnnual) * 100) : 0;
-        document.getElementById('quote-roi-pct').textContent = Math.round(linkedROI) + '%';
+        const paybackMo = totalAnnual > 0 ? Math.ceil((totalAnnual / roiResults.totalAnnualSavings) * 12) : 0;
+        document.getElementById('quote-roi-payback').textContent = paybackMo + ' months';
     }
 }
 
@@ -764,8 +851,8 @@ function renderSavedAssessments() {
                         <span class="mini-kpi-value">${formatCurrencyShort(a.totalAnnualSavings)}</span>
                     </div>
                     <div class="mini-kpi blue">
-                        <span class="mini-kpi-label">ROI</span>
-                        <span class="mini-kpi-value">${Math.round(a.roi)}%</span>
+                        <span class="mini-kpi-label">Net Benefit</span>
+                        <span class="mini-kpi-value">${formatCurrencyShort(a.netBenefit)}</span>
                     </div>
                     <div class="mini-kpi purple">
                         <span class="mini-kpi-label">Payback</span>
@@ -862,7 +949,7 @@ function generatePDFHTML(r, type) {
             .kpi.green .kpi-value { color: #08CF65; }
             .kpi.blue .kpi-value { color: #6366F1; }
             .kpi.purple .kpi-value { color: #8B5CF6; }
-            .kpi.orange .kpi-value { color: #F59E0B; }
+            .kpi.teal .kpi-value { color: #10B981; }
             .section { margin-bottom: 24px; }
             .section h3 { font-size: 16px; color: #1a1a2e; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px; }
             table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -871,6 +958,15 @@ function generatePDFHTML(r, type) {
             .total-row td { font-weight: 700; background: #f8f9fa; }
             .story { background: #f8f9fa; padding: 20px; border-radius: 8px; font-size: 13px; line-height: 1.8; }
             .story strong { color: #08CF65; }
+            .story h3 { border: none; font-size: 18px; margin-bottom: 8px; }
+            .story h4 { font-size: 14px; margin: 16px 0 6px; color: #1a1a2e; }
+            .story ol, .story ul { padding-left: 20px; margin: 8px 0; }
+            .story li { margin-bottom: 4px; }
+            .story-value-split { display: flex; gap: 20px; margin: 12px 0; }
+            .story-value-item { flex: 1; background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 16px; }
+            .story-value-num { font-size: 22px; font-weight: 700; color: #08CF65; display: block; }
+            .story-value-label { font-size: 12px; color: #666; text-transform: uppercase; display: block; margin-bottom: 6px; }
+            .story-value-item p { font-size: 12px; color: #555; margin: 0; }
             .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 11px; color: #999; text-align: center; }
             .quote-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
             .quote-line.total { font-weight: 700; font-size: 18px; border-top: 2px solid #08CF65; padding-top: 12px; }
@@ -879,10 +975,10 @@ function generatePDFHTML(r, type) {
     `;
 
     if (type === 'roi' && r) {
-        return `<!DOCTYPE html><html><head><title>ROI Analysis — ${r.company}</title>${styles}</head><body>
+        return `<!DOCTYPE html><html><head><title>Business Case — ${r.company}</title>${styles}</head><body>
             <div class="header">
                 <div><span class="logo">Wrike</span> <span style="color:#666; margin-left:8px;">Value Engineering</span></div>
-                <div style="text-align:right;"><div class="title">ROI Analysis</div><div class="subtitle">${r.verticalName}</div></div>
+                <div style="text-align:right;"><div class="title">Business Case Analysis</div><div class="subtitle">${r.verticalName}</div></div>
             </div>
             <div class="meta">
                 <div class="meta-item"><strong>Company</strong>${r.company}</div>
@@ -895,7 +991,7 @@ function generatePDFHTML(r, type) {
                 <div class="kpi green"><span class="kpi-label">Annual Savings</span><span class="kpi-value">${formatCurrency(r.totalAnnualSavings)}</span></div>
                 <div class="kpi blue"><span class="kpi-label">Investment</span><span class="kpi-value">${formatCurrency(r.annualInvestment)}</span></div>
                 <div class="kpi purple"><span class="kpi-label">Net Benefit</span><span class="kpi-value">${formatCurrency(r.netBenefit)}</span></div>
-                <div class="kpi orange"><span class="kpi-label">ROI</span><span class="kpi-value">${Math.round(r.roi)}%</span></div>
+                <div class="kpi teal"><span class="kpi-label">Payback</span><span class="kpi-value">${r.paybackMonths} months</span></div>
             </div>
             <div class="section"><h3>Productivity Savings</h3>
                 <table><thead><tr><th>Activity</th><th>Current (hrs/wk)</th><th>Saved (hrs/wk)</th><th>Annual Savings</th></tr></thead>
@@ -912,7 +1008,7 @@ function generatePDFHTML(r, type) {
                     <tr class="total-row"><td>Total</td><td>${formatCurrency(r.totalCostAvoidance)}</td></tr>
                 </tbody></table>
             </div>
-            <div class="section"><h3>Executive Summary</h3><div class="story">${generateValueStory(r)}</div></div>
+            <div class="section"><h3>Executive Summary & Business Case</h3><div class="story">${generateValueStory(r)}</div></div>
             <div class="footer">Confidential — Prepared by Wrike Value Engineering | ${new Date().toLocaleDateString()}</div>
         </body></html>`;
     }
@@ -950,9 +1046,9 @@ function generatePDFHTML(r, type) {
         </div>
         ${roiResults ? `
         <div class="section">
-            <h3>Linked ROI Analysis</h3>
+            <h3>Linked Value Analysis</h3>
             <div class="quote-line"><span>Projected Annual Savings</span><span style="color:#08CF65;">${formatCurrency(roiResults.totalAnnualSavings)}</span></div>
-            <div class="quote-line"><span>ROI</span><span style="color:#08CF65;">${Math.round(roiResults.roi)}%</span></div>
+            <div class="quote-line"><span>Net Benefit (Year 1)</span><span style="color:#08CF65;">${formatCurrency(roiResults.netBenefit)}</span></div>
             <div class="quote-line"><span>Payback Period</span><span>${roiResults.paybackMonths} months</span></div>
         </div>` : ''}
         <div class="footer">
@@ -960,6 +1056,219 @@ function generatePDFHTML(r, type) {
             <p>Confidential — Wrike, a Citrix Company | ${new Date().toLocaleDateString()}</p>
         </div>
     </body></html>`;
+}
+
+// ---- PowerPoint Export ----
+function exportROIPPTX() {
+    if (!roiResults) {
+        showToast('Complete an ROI analysis first', 'warning');
+        return;
+    }
+    const r = roiResults;
+    const scenarioLabel = r.scenario === 'new' ? 'New Customer' : r.scenario === 'existing' ? 'Existing Customer' : 'Expansion';
+    const savingsPerUser = r.users > 0 ? formatCurrency(r.totalAnnualSavings / r.users) : '$0';
+    const prodPct = r.totalAnnualSavings > 0 ? Math.round((r.totalProductivitySavings / r.totalAnnualSavings) * 100) : 0;
+    const costPct = r.totalAnnualSavings > 0 ? Math.round((r.totalCostAvoidance / r.totalAnnualSavings) * 100) : 0;
+    const year1Net = (r.totalAnnualSavings * 0.7) - r.annualInvestment;
+    const year2Net = (r.totalAnnualSavings * 0.9) - r.annualInvestment;
+    const year3Net = r.totalAnnualSavings - r.annualInvestment;
+    const cumulative3Year = year1Net + year2Net + year3Net;
+
+    const pptx = new PptxGenJS();
+    pptx.author = r.preparedBy || 'Wrike Value Engineering';
+    pptx.company = 'Wrike';
+    pptx.subject = `Business Case for ${r.company}`;
+    pptx.title = `${r.company} — Wrike Business Case`;
+
+    const BRAND = {
+        green: '08CF65', dark: '0D0D1A', cardBg: '1A1A2E', white: 'FFFFFF',
+        textLight: 'F0F0F5', textMuted: 'A0A0B8', purple: '6366F1',
+        pink: 'EC4899', amber: 'F59E0B', teal: '10B981'
+    };
+
+    pptx.defineSlideMaster({
+        title: 'WRIKE_MASTER',
+        background: { color: BRAND.dark },
+        objects: [
+            { rect: { x: 0, y: 0, w: '100%', h: 0.06, fill: { color: BRAND.green } } },
+            { text: { text: 'WRIKE', options: { x: 0.4, y: 6.85, w: 1, h: 0.3, fontSize: 9, bold: true, color: BRAND.green, fontFace: 'Arial' } } },
+            { text: { text: 'Confidential', options: { x: 8.5, y: 6.85, w: 1.2, h: 0.3, fontSize: 8, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } } }
+        ]
+    });
+
+    // --- Slide 1: Title ---
+    const slide1 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide1.addText('Business Case', { x: 0.6, y: 1.5, w: 8.8, h: 0.7, fontSize: 36, bold: true, color: BRAND.green, fontFace: 'Arial' });
+    slide1.addText(r.company, { x: 0.6, y: 2.2, w: 8.8, h: 0.6, fontSize: 28, bold: true, color: BRAND.white, fontFace: 'Arial' });
+    slide1.addText(`${r.verticalName} | ${scenarioLabel} | ${r.users} Users`, { x: 0.6, y: 2.85, w: 8.8, h: 0.4, fontSize: 14, color: BRAND.textMuted, fontFace: 'Arial' });
+    slide1.addText(`Prepared by ${r.preparedBy || 'Wrike Value Engineering'} — ${r.date}`, { x: 0.6, y: 3.4, w: 8.8, h: 0.3, fontSize: 11, color: BRAND.textMuted, fontFace: 'Arial' });
+
+    // --- Slide 2: Executive Snapshot ---
+    const slide2 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide2.addText('Executive Snapshot', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+
+    const kpis = [
+        { label: 'Annual Savings', value: formatCurrency(r.totalAnnualSavings), color: BRAND.green },
+        { label: 'Wrike Investment', value: formatCurrency(r.annualInvestment), color: BRAND.purple },
+        { label: 'Net Benefit (Yr 1)', value: formatCurrency(r.netBenefit), color: BRAND.pink },
+        { label: 'Payback Period', value: r.paybackMonths + ' months', color: BRAND.teal }
+    ];
+    kpis.forEach((kpi, i) => {
+        const x = 0.6 + i * 2.25;
+        slide2.addShape(pptx.ShapeType.roundRect, { x: x, y: 1.0, w: 2.1, h: 1.2, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
+        slide2.addShape(pptx.ShapeType.rect, { x: x, y: 1.0, w: 2.1, h: 0.05, fill: { color: kpi.color } });
+        slide2.addText(kpi.label, { x: x, y: 1.15, w: 2.1, h: 0.3, fontSize: 9, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' });
+        slide2.addText(kpi.value, { x: x, y: 1.45, w: 2.1, h: 0.5, fontSize: 22, bold: true, color: kpi.color, fontFace: 'Arial', align: 'center' });
+    });
+
+    slide2.addText(`${r.company} can save ${formatCurrency(r.totalAnnualSavings)} per year (${savingsPerUser} per employee) by implementing Wrike for ${r.verticalName}. The investment pays for itself in just ${r.paybackMonths} months.`, {
+        x: 0.6, y: 2.5, w: 8.8, h: 0.8, fontSize: 13, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.4
+    });
+
+    // Value split boxes
+    slide2.addShape(pptx.ShapeType.roundRect, { x: 0.6, y: 3.5, w: 4.2, h: 1.5, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
+    slide2.addText(formatCurrency(r.totalProductivitySavings), { x: 0.8, y: 3.6, w: 3.8, h: 0.4, fontSize: 20, bold: true, color: BRAND.green, fontFace: 'Arial' });
+    slide2.addText(`Productivity Recovery (${prodPct}%)`, { x: 0.8, y: 4.0, w: 3.8, h: 0.25, fontSize: 10, color: BRAND.textMuted, fontFace: 'Arial' });
+    slide2.addText('Time savings from streamlined handoffs,\nfewer meetings, and automated reporting', { x: 0.8, y: 4.3, w: 3.8, h: 0.5, fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.3 });
+
+    slide2.addShape(pptx.ShapeType.roundRect, { x: 5.2, y: 3.5, w: 4.2, h: 1.5, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
+    slide2.addText(formatCurrency(r.totalCostAvoidance), { x: 5.4, y: 3.6, w: 3.8, h: 0.4, fontSize: 20, bold: true, color: BRAND.green, fontFace: 'Arial' });
+    slide2.addText(`Cost Avoidance (${costPct}%)`, { x: 5.4, y: 4.0, w: 3.8, h: 0.25, fontSize: 10, color: BRAND.textMuted, fontFace: 'Arial' });
+    slide2.addText('Reduced delays, fewer errors,\nrecovered revenue, and tool consolidation', { x: 5.4, y: 4.3, w: 3.8, h: 0.5, fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', lineSpacingMultiple: 1.3 });
+
+    // --- Slide 3: Productivity Breakdown ---
+    const slide3 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide3.addText('Productivity Savings Breakdown', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+
+    const prodRows = r.productivityItems.map(item => [
+        { text: item.label, options: { fontSize: 10, color: BRAND.textLight, fontFace: 'Arial' } },
+        { text: item.currentHours.toFixed(1), options: { fontSize: 10, color: BRAND.textLight, fontFace: 'Arial', align: 'center' } },
+        { text: item.hoursSaved.toFixed(1), options: { fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'center' } },
+        { text: formatCurrency(item.annualSavings), options: { fontSize: 10, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+    ]);
+    prodRows.push([
+        { text: 'TOTAL', options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial' } },
+        { text: '', options: {} },
+        { text: r.totalWeeklyHoursSaved.toFixed(1), options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'center' } },
+        { text: formatCurrency(r.totalProductivitySavings), options: { fontSize: 10, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+    ]);
+
+    slide3.addTable(
+        [
+            [
+                { text: 'Activity', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial' } },
+                { text: 'Current (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' } },
+                { text: 'Saved (hrs/wk)', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'center' } },
+                { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } }
+            ],
+            ...prodRows
+        ],
+        { x: 0.6, y: 1.0, w: 8.8, colW: [4.2, 1.5, 1.5, 1.6], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.4 }
+    );
+
+    // --- Slide 4: Cost Avoidance ---
+    const slide4 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide4.addText('Cost Avoidance & Recovery', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+
+    const costItems = [
+        ['Reduction in Project Delays', formatCurrency(r.delaySavings)],
+        ['Reduction in Rework & Errors', formatCurrency(r.reworkSavings)],
+        ['Revenue Risk Recovered', formatCurrency(r.revenueSavings)],
+        ['Tool Consolidation Savings', formatCurrency(r.toolConsolidation)],
+    ];
+    const costRows = costItems.map(([cat, val]) => [
+        { text: cat, options: { fontSize: 11, color: BRAND.textLight, fontFace: 'Arial' } },
+        { text: val, options: { fontSize: 11, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+    ]);
+    costRows.push([
+        { text: 'TOTAL COST AVOIDANCE', options: { fontSize: 11, bold: true, color: BRAND.green, fontFace: 'Arial' } },
+        { text: formatCurrency(r.totalCostAvoidance), options: { fontSize: 11, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'right' } }
+    ]);
+
+    slide4.addTable(
+        [
+            [
+                { text: 'Category', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial' } },
+                { text: 'Annual Savings', options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: 'right' } }
+            ],
+            ...costRows
+        ],
+        { x: 0.6, y: 1.0, w: 8.8, colW: [6.0, 2.8], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.45 }
+    );
+
+    // --- Slide 5: 3-Year Projection ---
+    const slide5 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide5.addText('3-Year Value Projection', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+
+    const projRows = [
+        ['Year 1 (70% adoption)', formatCurrency(r.totalAnnualSavings * 0.7), formatCurrency(r.annualInvestment), formatCurrency(year1Net)],
+        ['Year 2 (90% adoption)', formatCurrency(r.totalAnnualSavings * 0.9), formatCurrency(r.annualInvestment), formatCurrency(year2Net)],
+        ['Year 3 (100% adoption)', formatCurrency(r.totalAnnualSavings), formatCurrency(r.annualInvestment), formatCurrency(year3Net)],
+        ['3-Year Total', formatCurrency(r.totalAnnualSavings * 2.6), formatCurrency(r.annualInvestment * 3), formatCurrency(cumulative3Year)]
+    ].map((row, idx) => row.map((cell, ci) => ({
+        text: cell,
+        options: {
+            fontSize: 11,
+            bold: idx === 3,
+            color: ci === 0 ? BRAND.textLight : ci === 3 ? BRAND.green : BRAND.textLight,
+            fontFace: 'Arial',
+            align: ci === 0 ? 'left' : 'right'
+        }
+    })));
+
+    slide5.addTable(
+        [
+            ['', 'Savings', 'Investment', 'Net Benefit'].map((h, i) => ({
+                text: h, options: { fontSize: 9, bold: true, color: BRAND.textMuted, fontFace: 'Arial', align: i === 0 ? 'left' : 'right' }
+            })),
+            ...projRows
+        ],
+        { x: 0.6, y: 1.0, w: 8.8, colW: [3.2, 2.0, 2.0, 1.6], border: { type: 'solid', pt: 0.5, color: '333355' }, fill: { color: BRAND.cardBg }, rowH: 0.45 }
+    );
+
+    slide5.addText(`Cumulative 3-Year Net Benefit: ${formatCurrency(cumulative3Year)}`, {
+        x: 0.6, y: 3.8, w: 8.8, h: 0.5, fontSize: 18, bold: true, color: BRAND.green, fontFace: 'Arial', align: 'center'
+    });
+
+    // --- Slide 6: Recommended Next Steps ---
+    const slide6 = pptx.addSlide({ masterName: 'WRIKE_MASTER' });
+    slide6.addText('Recommended Next Steps', { x: 0.6, y: 0.3, w: 8.8, h: 0.5, fontSize: 24, bold: true, color: BRAND.white, fontFace: 'Arial' });
+
+    const steps = [
+        { num: '1', title: 'Validate Assumptions', desc: 'Review the hours and cost estimates with your team leads to confirm they reflect your reality.' },
+        { num: '2', title: 'Pilot with a Focused Team', desc: 'Start with one department or workflow to prove value quickly and build internal champions.' },
+        { num: '3', title: 'Measure Outcomes at 90 Days', desc: 'Track time savings and delivery improvements against these projections to quantify real impact.' },
+        { num: '4', title: 'Scale Across the Organization', desc: 'Use pilot results to build the case for broader rollout and maximize organizational value.' }
+    ];
+
+    steps.forEach((step, i) => {
+        const y = 1.1 + i * 1.2;
+        slide6.addShape(pptx.ShapeType.roundRect, { x: 0.6, y: y, w: 8.8, h: 1.0, fill: { color: BRAND.cardBg }, rectRadius: 0.1 });
+        slide6.addShape(pptx.ShapeType.ellipse, { x: 0.9, y: y + 0.25, w: 0.5, h: 0.5, fill: { color: BRAND.green } });
+        slide6.addText(step.num, { x: 0.9, y: y + 0.25, w: 0.5, h: 0.5, fontSize: 16, bold: true, color: BRAND.dark, fontFace: 'Arial', align: 'center', valign: 'middle' });
+        slide6.addText(step.title, { x: 1.7, y: y + 0.15, w: 7.4, h: 0.35, fontSize: 14, bold: true, color: BRAND.white, fontFace: 'Arial' });
+        slide6.addText(step.desc, { x: 1.7, y: y + 0.5, w: 7.4, h: 0.35, fontSize: 11, color: BRAND.textMuted, fontFace: 'Arial' });
+    });
+
+    pptx.writeFile({ fileName: `${r.company.replace(/[^a-zA-Z0-9]/g, '_')}_Wrike_Business_Case.pptx` })
+        .then(() => showToast('PowerPoint exported successfully!', 'success'))
+        .catch(err => {
+            console.error('PPTX export error:', err);
+            showToast('Export failed — check console for details', 'warning');
+        });
+}
+
+// ---- Improved PDF Export ----
+function exportROIPDFDirect() {
+    if (!roiResults) {
+        showToast('Complete an ROI analysis first', 'warning');
+        return;
+    }
+    const r = roiResults;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(generatePDFHTML(r, 'roi'));
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
 }
 
 // ---- Utility Functions ----

@@ -773,9 +773,13 @@ body {
 /* ---- KPI Row ---- */
 .kpi-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 28px;
+}
+
+.kpi-row.four-col {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .kpi-card {
@@ -1370,7 +1374,7 @@ body {
     }
 
     .kpi-row {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .pricing-layout {
@@ -1379,6 +1383,10 @@ body {
 
     .plan-cards {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .story-value-split {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1434,9 +1442,17 @@ body {
         gap: 12px;
     }
 
+    .page-header-right {
+        flex-wrap: wrap;
+    }
+
     .saved-card-header {
         flex-direction: column;
         gap: 12px;
+    }
+
+    .story-value-split {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1462,6 +1478,187 @@ canvas {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---- Benchmark Hints ---- */
+.benchmark-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: rgba(8, 207, 101, 0.06);
+    border: 1px solid rgba(8, 207, 101, 0.15);
+    border-radius: var(--radius-sm);
+    position: relative;
+}
+
+.benchmark-hint.inline {
+    margin-top: 6px;
+}
+
+.benchmark-hint i.fa-chart-bar {
+    font-size: 11px;
+    color: var(--wrike-green);
+    flex-shrink: 0;
+}
+
+.benchmark-hint > span {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.benchmark-hint strong {
+    color: var(--wrike-green);
+}
+
+.benchmark-source-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+    font-size: 12px;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.benchmark-source-btn:hover {
+    color: var(--wrike-green);
+}
+
+.benchmark-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    box-shadow: var(--shadow-md);
+    z-index: 50;
+}
+
+.benchmark-tooltip.visible {
+    display: block;
+}
+
+/* ---- PowerPoint Button ---- */
+.btn-pptx {
+    background: #D24726;
+    color: #fff;
+}
+
+.btn-pptx:hover {
+    background: #B83D1F;
+}
+
+/* ---- Enhanced Value Story / Executive Summary ---- */
+.story-headline {
+    margin-bottom: 20px;
+}
+
+.story-headline h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--wrike-green);
+    margin-bottom: 8px;
+    border: none;
+    padding: 0;
+}
+
+.story-lead {
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.story-section {
+    margin-bottom: 20px;
+}
+
+.story-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.story-section p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+.story-value-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 12px 0;
+}
+
+.story-value-item {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+
+.story-value-num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--wrike-green);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.story-value-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.story-value-item p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.story-next-steps {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+
+.story-next-steps ol {
+    padding-left: 20px;
+    margin: 8px 0 0;
+}
+
+.story-next-steps li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.story-next-steps li strong {
+    color: var(--text-primary);
 }
 
 /* ---- Print Styles ---- */
