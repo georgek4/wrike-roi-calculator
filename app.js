@@ -130,7 +130,7 @@ function navigateTo(page) {
 
     if (page === 'pricing') updateQuote();
     if (page === 'saved') renderSavedAssessments();
-    if (page === 'ai-agents') calculateAIROI();
+    if (page === 'ai-agents') calculateAIAgents();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1462,108 +1462,235 @@ function exportROIPDFDirect() {
 }
 
 // ---- AI Agent ROI Calculator ----
-const AI_USE_CASES = [
-    { id: 'reporting', label: 'Status Updates & Reporting', icon: 'fa-file-alt' },
-    { id: 'tasks', label: 'Task Creation & Assignment', icon: 'fa-tasks' },
-    { id: 'research', label: 'Information Retrieval & Research', icon: 'fa-search' },
-    { id: 'content', label: 'Content Drafting & Review', icon: 'fa-pen-fancy' },
-    { id: 'risk', label: 'Risk Detection & Alerts', icon: 'fa-exclamation-triangle' },
-    { id: 'meetings', label: 'Meeting Prep & Follow-ups', icon: 'fa-calendar-check' }
+// ---- Wrike AI Agent Event Descriptions ----
+const AI_EVENT_OPTIONS = [
+    { value: '', label: '— Select an event —' },
+    { value: 'intake-review', label: '[Intake] Reviewing & routing inbound requests', defaultMin: 15, defaultActions: 3, icon: 'fa-inbox' },
+    { value: 'triage-prioritize', label: '[Triage] Prioritize inbound requests', defaultMin: 10, defaultActions: 2, icon: 'fa-sort-amount-down' },
+    { value: 'risk-consolidate', label: '[Risk] Consolidating project updates to understand risk', defaultMin: 20, defaultActions: 2, icon: 'fa-exclamation-triangle' },
+    { value: 'follow-up-missing', label: 'Manual follow-up on missing fields / incomplete submissions', defaultMin: 8, defaultActions: 2, icon: 'fa-clipboard-check' },
+    { value: 'back-schedule', label: 'Back-scheduling tasks according to lead times', defaultMin: 12, defaultActions: 2, icon: 'fa-calendar-alt' },
+    { value: 'consolidate-feedback', label: 'Consolidating feedback from team members or stakeholders', defaultMin: 15, defaultActions: 2, icon: 'fa-comments' },
+    { value: 'assign-requests', label: 'Assign inbound requests to specific role, team or individual', defaultMin: 5, defaultActions: 1, icon: 'fa-user-plus' },
+    { value: 'status-change', label: 'Automatic status changes based on conditions', defaultMin: 3, defaultActions: 1, icon: 'fa-exchange-alt' },
+    { value: 'custom-field-update', label: 'Classify & update custom fields on tasks', defaultMin: 5, defaultActions: 2, icon: 'fa-edit' },
+    { value: 'validate-completeness', label: 'Validate request completeness before work begins', defaultMin: 10, defaultActions: 3, icon: 'fa-check-double' },
+    { value: 'risk-scan', label: 'Scan projects for overdue or blocked items & post summary', defaultMin: 20, defaultActions: 2, icon: 'fa-search' },
+    { value: 'rename-items', label: 'Standardize task/project naming based on content', defaultMin: 3, defaultActions: 1, icon: 'fa-font' },
+    { value: 'date-management', label: 'Push due dates when tasks are blocked', defaultMin: 5, defaultActions: 1, icon: 'fa-clock' },
+    { value: 'custom', label: 'Custom scenario (type your own)', defaultMin: 10, defaultActions: 2, icon: 'fa-cog' }
 ];
 
-function calculateAIROI() {
-    const workers = parseInt(document.getElementById('ai-workers').value) || 100;
-    const salary = parseFloat(document.getElementById('ai-salary').value) || 95000;
-    const annualHours = parseInt(document.getElementById('ai-annual-hours').value) || 2080;
-    const hourlyRate = salary / annualHours;
+const AI_VERTICAL_PRESETS = {
+    custom: { label: 'Custom', events: [] },
+    plm: {
+        label: 'Product Lifecycle Management',
+        events: [
+            { event: 'intake-review', team: 'Engineering', eventsPerMonth: 80, minSaved: 15, actions: 3 },
+            { event: 'risk-consolidate', team: 'Program Mgmt', eventsPerMonth: 20, minSaved: 25, actions: 2 },
+            { event: 'back-schedule', team: 'Engineering', eventsPerMonth: 40, minSaved: 12, actions: 2 },
+            { event: 'status-change', team: 'QA', eventsPerMonth: 120, minSaved: 3, actions: 1 },
+            { event: 'validate-completeness', team: 'Supply Chain', eventsPerMonth: 60, minSaved: 10, actions: 3 },
+        ]
+    },
+    csd: {
+        label: 'Client Service Delivery',
+        events: [
+            { event: 'intake-review', team: 'Account Mgmt', eventsPerMonth: 100, minSaved: 15, actions: 3 },
+            { event: 'triage-prioritize', team: 'Service Ops', eventsPerMonth: 100, minSaved: 10, actions: 2 },
+            { event: 'assign-requests', team: 'Operations', eventsPerMonth: 100, minSaved: 5, actions: 1 },
+            { event: 'follow-up-missing', team: 'Account Mgmt', eventsPerMonth: 60, minSaved: 8, actions: 2 },
+            { event: 'consolidate-feedback', team: 'Delivery', eventsPerMonth: 30, minSaved: 15, actions: 2 },
+        ]
+    },
+    marketing: {
+        label: 'Marketing — Creative & Campaigns',
+        events: [
+            { event: 'intake-review', team: 'Creative Ops', eventsPerMonth: 120, minSaved: 15, actions: 3 },
+            { event: 'triage-prioritize', team: 'Marketing Ops', eventsPerMonth: 120, minSaved: 10, actions: 2 },
+            { event: 'validate-completeness', team: 'Creative', eventsPerMonth: 80, minSaved: 10, actions: 3 },
+            { event: 'custom-field-update', team: 'Campaign Mgmt', eventsPerMonth: 60, minSaved: 5, actions: 2 },
+            { event: 'consolidate-feedback', team: 'Stakeholders', eventsPerMonth: 40, minSaved: 15, actions: 2 },
+        ]
+    },
+    pmo: {
+        label: 'Project Management Office',
+        events: [
+            { event: 'risk-consolidate', team: 'PMO', eventsPerMonth: 30, minSaved: 25, actions: 2 },
+            { event: 'risk-scan', team: 'PMO', eventsPerMonth: 20, minSaved: 20, actions: 2 },
+            { event: 'status-change', team: 'Project Leads', eventsPerMonth: 200, minSaved: 3, actions: 1 },
+            { event: 'assign-requests', team: 'PMO', eventsPerMonth: 50, minSaved: 5, actions: 1 },
+            { event: 'date-management', team: 'Delivery Mgrs', eventsPerMonth: 40, minSaved: 5, actions: 1 },
+        ]
+    }
+};
 
-    let totalWeeklyHoursSaved = 0;
-    const breakdownItems = [];
+const PLAN_UNITS_MAP = { Business: 3, Enterprise: 5, Pinnacle: 10, Apex: 100 };
 
-    AI_USE_CASES.forEach(uc => {
-        const hoursEl = document.getElementById('ai-uc-' + uc.id);
-        const pctEl = document.getElementById('ai-uc-' + uc.id + '-pct');
-        if (!hoursEl || !pctEl) return;
-        const currentHours = parseFloat(hoursEl.value) || 0;
-        const automationPct = parseFloat(pctEl.value) / 100;
-        const hoursSaved = currentHours * automationPct;
-        const annualSavings = hoursSaved * 52 * workers * hourlyRate;
-        totalWeeklyHoursSaved += hoursSaved;
+let aiEventRowCount = 0;
 
-        breakdownItems.push({
-            label: uc.label,
-            icon: uc.icon,
-            hoursSaved: hoursSaved,
-            annualSavings: annualSavings,
-            pct: automationPct * 100
-        });
+function buildEventSelectOptions(selectedValue) {
+    return AI_EVENT_OPTIONS.map(opt =>
+        `<option value="${opt.value}" ${opt.value === selectedValue ? 'selected' : ''}>${opt.label}</option>`
+    ).join('');
+}
+
+function addAIEventRow(preset) {
+    const container = document.getElementById('ai-event-rows');
+    const idx = aiEventRowCount++;
+    const hourlyRate = parseFloat(document.getElementById('ai-hourly-rate').value) || 50;
+    const ev = preset || { event: '', team: '', eventsPerMonth: '', minSaved: '', actions: '', rate: hourlyRate };
+
+    const row = document.createElement('div');
+    row.className = 'ai-event-row';
+    row.id = 'ai-evt-row-' + idx;
+    row.innerHTML = `
+        <select class="ai-evt-select" data-idx="${idx}" onchange="onEventSelect(this); calculateAIAgents()">
+            ${buildEventSelectOptions(ev.event)}
+        </select>
+        <input type="text" class="ai-evt-team" placeholder="e.g. Marketing" value="${ev.team || ''}" onchange="calculateAIAgents()">
+        <input type="number" class="ai-evt-num" placeholder="0" min="0" value="${ev.eventsPerMonth || ''}" onchange="calculateAIAgents()">
+        <input type="number" class="ai-evt-num" placeholder="0" min="0" value="${ev.minSaved || ''}" onchange="calculateAIAgents()">
+        <input type="number" class="ai-evt-num ai-evt-rate" placeholder="${hourlyRate}" min="0" value="${ev.rate || ''}" onchange="calculateAIAgents()">
+        <input type="number" class="ai-evt-num" placeholder="0" min="0" value="${ev.actions || ''}" onchange="calculateAIAgents()">
+        <button class="ai-evt-remove" onclick="removeAIEventRow(${idx})"><i class="fas fa-times"></i></button>
+    `;
+    container.appendChild(row);
+}
+
+function onEventSelect(selectEl) {
+    const opt = AI_EVENT_OPTIONS.find(o => o.value === selectEl.value);
+    if (!opt || !opt.value) return;
+    const row = selectEl.closest('.ai-event-row');
+    const inputs = row.querySelectorAll('input[type="number"].ai-evt-num');
+    if (inputs[1] && !inputs[1].value) inputs[1].value = opt.defaultMin;
+    if (inputs[3] && !inputs[3].value) inputs[3].value = opt.defaultActions;
+}
+
+function removeAIEventRow(idx) {
+    const row = document.getElementById('ai-evt-row-' + idx);
+    if (row) row.remove();
+    calculateAIAgents();
+}
+
+function getEventRowData() {
+    const rows = document.querySelectorAll('.ai-event-row');
+    const data = [];
+    const defaultRate = parseFloat(document.getElementById('ai-hourly-rate').value) || 50;
+    rows.forEach(row => {
+        const select = row.querySelector('select');
+        const teamInput = row.querySelector('.ai-evt-team');
+        const nums = row.querySelectorAll('input[type="number"].ai-evt-num');
+        const evtLabel = select.options[select.selectedIndex]?.text || '';
+        const evtValue = select.value;
+        const eventsPerMonth = parseFloat(nums[0]?.value) || 0;
+        const minSaved = parseFloat(nums[1]?.value) || 0;
+        const rate = parseFloat(nums[2]?.value) || defaultRate;
+        const actions = parseFloat(nums[3]?.value) || 0;
+        if (evtValue) {
+            data.push({ label: evtLabel, eventsPerMonth, minSaved, rate, actions, team: teamInput?.value || '' });
+        }
+    });
+    return data;
+}
+
+function calculateAIAgents() {
+    const eventRows = getEventRowData();
+    const numUsers = parseInt(document.getElementById('ai-num-users').value) || 1;
+    const plan = document.getElementById('ai-plan-type').value;
+    const unitsPerUser = PLAN_UNITS_MAP[plan] || 10;
+
+    let totalHoursSaved = 0;
+    let totalValue = 0;
+    let totalActionsPerMonth = 0;
+    const breakdown = [];
+
+    eventRows.forEach(row => {
+        const hoursSaved = (row.minSaved / 60) * row.eventsPerMonth * 12;
+        const value = hoursSaved * row.rate;
+        const monthlyActions = row.actions * row.eventsPerMonth;
+        totalHoursSaved += hoursSaved;
+        totalValue += value;
+        totalActionsPerMonth += monthlyActions;
+        breakdown.push({ label: row.label, team: row.team, hoursSaved, value, monthlyActions });
     });
 
-    const totalProductivitySavings = breakdownItems.reduce((s, i) => s + i.annualSavings, 0);
-    const totalAnnualHoursSaved = totalWeeklyHoursSaved * 52 * workers;
+    const workingDays = totalHoursSaved / 8;
+    const fte = totalHoursSaved / 2080;
 
-    const errorCost = parseFloat(document.getElementById('ai-error-cost').value) || 0;
-    const errorReduction = parseFloat(document.getElementById('ai-error-reduction').value) / 100;
-    const speedRevenue = parseFloat(document.getElementById('ai-speed-revenue').value) || 0;
-    const speedImprovement = parseFloat(document.getElementById('ai-speed-improvement').value) / 100;
+    const monthlyAllotted = numUsers * unitsPerUser;
+    const excessAnnual = Math.max(0, (totalActionsPerMonth - monthlyAllotted) * 12);
+    const annualSpend = Math.ceil(excessAnnual / 10000) * 1000;
+    const monthlyPPU = numUsers > 0 ? annualSpend / numUsers / 12 : 0;
+    const netValue = totalValue - annualSpend;
+    const roi = annualSpend > 0 ? ((totalValue - annualSpend) / annualSpend) : (totalValue > 0 ? Infinity : 0);
 
-    const qualitySavings = (errorCost * errorReduction) + (speedRevenue * speedImprovement);
-    const totalValue = totalProductivitySavings + qualitySavings;
-
-    const fteEquivalent = annualHours > 0 ? (totalAnnualHoursSaved / annualHours) : 0;
-    const valuePerEmployee = workers > 0 ? totalValue / workers : 0;
-    const daysRecovered = totalAnnualHoursSaved / 8;
-
-    document.getElementById('ai-kpi-hours').textContent = totalWeeklyHoursSaved.toFixed(1) + ' hrs/week';
-    document.getElementById('ai-kpi-total-hours').textContent = Math.round(totalAnnualHoursSaved).toLocaleString() + ' hours';
-    document.getElementById('ai-kpi-prod-savings').textContent = formatCurrency(totalProductivitySavings);
-    document.getElementById('ai-kpi-quality-savings').textContent = formatCurrency(qualitySavings);
+    document.getElementById('ai-kpi-hours').textContent = Math.round(totalHoursSaved).toLocaleString();
     document.getElementById('ai-kpi-total-value').textContent = formatCurrency(totalValue);
+    document.getElementById('ai-equiv-days').textContent = Math.round(workingDays).toLocaleString();
+    document.getElementById('ai-equiv-fte').textContent = fte.toFixed(1);
 
-    document.getElementById('ai-equiv-fte').textContent = fteEquivalent.toFixed(1);
-    document.getElementById('ai-equiv-per-user').textContent = formatCurrencyShort(valuePerEmployee);
-    document.getElementById('ai-equiv-days').textContent = Math.round(daysRecovered).toLocaleString();
+    document.getElementById('ai-cons-required').textContent = Math.round(totalActionsPerMonth).toLocaleString();
+    document.getElementById('ai-cons-allotted').textContent = Math.round(monthlyAllotted).toLocaleString();
+    document.getElementById('ai-cons-spend').textContent = formatCurrency(annualSpend);
+    document.getElementById('ai-cons-ppu').textContent = '$' + monthlyPPU.toFixed(2) + '/user/mo';
+
+    const maxBar = Math.max(totalActionsPerMonth, monthlyAllotted, 1);
+    document.getElementById('ai-cons-bar-allotted').style.width = (monthlyAllotted / maxBar * 100) + '%';
+    document.getElementById('ai-cons-bar-required').style.width = (totalActionsPerMonth / maxBar * 100) + '%';
+
+    document.getElementById('ai-net-value').textContent = formatCurrency(netValue);
+    const roiText = roi === Infinity ? 'Included in plan' : (roi * 100).toFixed(0) + '%';
+    document.getElementById('ai-roi-pct').textContent = roiText;
 
     const breakdownList = document.getElementById('ai-breakdown-list');
-    const maxSavings = Math.max(...breakdownItems.map(i => i.annualSavings), 1);
-    breakdownList.innerHTML = breakdownItems.map(item => {
-        const barPct = (item.annualSavings / maxSavings) * 100;
+    const maxVal = Math.max(...breakdown.map(b => b.value), 1);
+    breakdownList.innerHTML = breakdown.map(item => {
+        const barPct = (item.value / maxVal) * 100;
+        const opt = AI_EVENT_OPTIONS.find(o => item.label.includes(o.label));
+        const icon = opt ? opt.icon : 'fa-robot';
         return `
             <div class="ai-breakdown-item">
                 <div class="ai-bd-label">
-                    <i class="fas ${item.icon}"></i>
+                    <i class="fas ${icon}"></i>
                     <span>${item.label}</span>
                 </div>
                 <div class="ai-bd-bar-container">
                     <div class="ai-bd-bar" style="width: ${barPct}%"></div>
                 </div>
                 <div class="ai-bd-values">
-                    <span class="ai-bd-hours">${item.hoursSaved.toFixed(1)}h/wk</span>
-                    <span class="ai-bd-savings">${formatCurrencyShort(item.annualSavings)}</span>
+                    <span class="ai-bd-hours">${Math.round(item.hoursSaved)} hrs/yr</span>
+                    <span class="ai-bd-savings">${formatCurrencyShort(item.value)}</span>
                 </div>
             </div>
         `;
     }).join('');
 }
 
+function applyAIVertical(verticalKey) {
+    document.querySelectorAll('.ai-vtab').forEach(t => t.classList.remove('active'));
+    const tab = document.querySelector(`.ai-vtab[data-ai-vertical="${verticalKey}"]`);
+    if (tab) tab.classList.add('active');
+
+    document.getElementById('ai-event-rows').innerHTML = '';
+    aiEventRowCount = 0;
+
+    const preset = AI_VERTICAL_PRESETS[verticalKey];
+    if (preset && preset.events.length > 0) {
+        preset.events.forEach(ev => addAIEventRow(ev));
+    } else {
+        addAIEventRow();
+        addAIEventRow();
+        addAIEventRow();
+    }
+    calculateAIAgents();
+}
+
 function resetAICalculator() {
-    document.getElementById('ai-workers').value = 100;
-    document.getElementById('ai-salary').value = 95000;
-    document.getElementById('ai-annual-hours').value = 2080;
-    const defaults = { reporting: [3, 70], tasks: [2.5, 60], research: [4, 55], content: [3, 50], risk: [2, 65], meetings: [2.5, 60] };
-    Object.keys(defaults).forEach(id => {
-        const hoursEl = document.getElementById('ai-uc-' + id);
-        const pctEl = document.getElementById('ai-uc-' + id + '-pct');
-        if (hoursEl) hoursEl.value = defaults[id][0];
-        if (pctEl) { pctEl.value = defaults[id][1]; syncSlider(pctEl); }
-    });
-    document.getElementById('ai-error-cost').value = 120000;
-    document.getElementById('ai-error-reduction').value = 30;
-    document.getElementById('ai-speed-revenue').value = 200000;
-    document.getElementById('ai-speed-improvement').value = 20;
-    syncSlider(document.getElementById('ai-error-reduction'));
-    syncSlider(document.getElementById('ai-speed-improvement'));
-    calculateAIROI();
+    document.getElementById('ai-hourly-rate').value = 50;
+    document.getElementById('ai-plan-type').value = 'Pinnacle';
+    document.getElementById('ai-num-users').value = 25;
+    applyAIVertical('custom');
     showToast('AI Calculator reset', 'info');
 }
 
@@ -1613,5 +1740,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     updateQuote();
-    calculateAIROI();
+    applyAIVertical('custom');
 });

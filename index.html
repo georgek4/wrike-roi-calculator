@@ -471,251 +471,84 @@
         </div>
     </div>
 
-    <!-- ==================== AI AGENT ROI CALCULATOR PAGE ==================== -->
+    <!-- ==================== WRIKE AI AGENT TIME SAVINGS CALCULATOR ==================== -->
     <div id="page-ai-agents" class="page">
         <div class="page-header">
             <div class="page-header-left">
-                <h1><i class="fas fa-robot"></i> AI Agent ROI Calculator</h1>
-                <p>Quantify the value of Wrike's AI agents for automating work across your organization</p>
+                <h1><i class="fas fa-robot"></i> Wrike AI Agent — Time Savings Calculator</h1>
+                <p>Estimate the time and cost savings from automating workflows with Wrike AI Agents</p>
             </div>
             <div class="page-header-right">
                 <button class="btn btn-outline" onclick="resetAICalculator()"><i class="fas fa-redo"></i> Reset</button>
             </div>
         </div>
 
+        <!-- Vertical Quick-Start Tabs -->
+        <div class="ai-vertical-bar">
+            <span class="ai-vertical-label">Quick-start by vertical:</span>
+            <div class="ai-vertical-tabs">
+                <button class="ai-vtab active" data-ai-vertical="custom" onclick="applyAIVertical('custom')">Custom</button>
+                <button class="ai-vtab" data-ai-vertical="plm" onclick="applyAIVertical('plm')"><i class="fas fa-cogs"></i> PLM</button>
+                <button class="ai-vtab" data-ai-vertical="csd" onclick="applyAIVertical('csd')"><i class="fas fa-headset"></i> Client Services</button>
+                <button class="ai-vtab" data-ai-vertical="marketing" onclick="applyAIVertical('marketing')"><i class="fas fa-bullhorn"></i> Marketing</button>
+                <button class="ai-vtab" data-ai-vertical="pmo" onclick="applyAIVertical('pmo')"><i class="fas fa-project-diagram"></i> PMO</button>
+            </div>
+        </div>
+
         <div class="ai-calc-layout">
             <!-- Left: Inputs -->
             <div class="ai-calc-inputs">
-                <div class="form-section">
-                    <h3><i class="fas fa-building"></i> Organization Profile</h3>
-                    <div class="form-group">
-                        <label>Number of Knowledge Workers</label>
-                        <input type="number" id="ai-workers" value="100" min="1" onchange="calculateAIROI()">
-                        <span class="input-hint">Employees who could benefit from AI automation</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Average Fully-Loaded Annual Salary ($)</label>
-                        <input type="number" id="ai-salary" value="95000" min="0" step="1000" onchange="calculateAIROI()">
-                    </div>
-                    <div class="form-group">
-                        <label>Annual Working Hours</label>
-                        <input type="number" id="ai-annual-hours" value="2080" min="1000" max="3000" onchange="calculateAIROI()">
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3><i class="fas fa-robot"></i> AI Agent Use Cases</h3>
-                    <p class="section-desc">Estimate how many hours per week each employee spends on tasks that AI agents can automate or accelerate.</p>
-
-                    <div class="ai-use-case-grid">
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-file-alt"></i></div>
-                                <div>
-                                    <h4>Status Updates & Reporting</h4>
-                                    <p>AI generates project summaries, status reports, and dashboards automatically</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-reporting" value="3" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-reporting-pct" min="0" max="95" value="70" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">70%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>60–85% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">McKinsey Global Institute, 2024 — "The economic potential of generative AI"</div>
-                            </div>
+                <!-- Settings Row -->
+                <div class="form-section ai-settings-row">
+                    <h3><i class="fas fa-sliders-h"></i> Settings</h3>
+                    <div class="form-grid three-col">
+                        <div class="form-group">
+                            <label>Hourly Rate ($)</label>
+                            <input type="number" id="ai-hourly-rate" value="50" min="1" step="5" onchange="calculateAIAgents()">
+                            <span class="input-hint">Default average wage</span>
                         </div>
-
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-tasks"></i></div>
-                                <div>
-                                    <h4>Task Creation & Assignment</h4>
-                                    <p>AI auto-creates tasks from emails, meetings, and briefs; suggests assignments based on capacity</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-tasks" value="2.5" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-tasks-pct" min="0" max="95" value="60" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">60%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>50–75% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">Forrester — "The Total Economic Impact of AI-Powered Work Management", 2024</div>
-                            </div>
+                        <div class="form-group">
+                            <label>Wrike Plan</label>
+                            <select id="ai-plan-type" onchange="calculateAIAgents()">
+                                <option value="Business">Business (3 units/user/mo)</option>
+                                <option value="Enterprise">Enterprise (5 units/user/mo)</option>
+                                <option value="Pinnacle" selected>Pinnacle (10 units/user/mo)</option>
+                                <option value="Apex">Apex (100 units/user/mo)</option>
+                            </select>
                         </div>
-
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-search"></i></div>
-                                <div>
-                                    <h4>Information Retrieval & Research</h4>
-                                    <p>AI finds answers across projects, documents, and historical data instantly</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-research" value="4" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-research-pct" min="0" max="95" value="55" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">55%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>45–70% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">IDC — "The Knowledge Quotient", 2023; BCG "AI at Work" report, 2024</div>
-                            </div>
-                        </div>
-
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-pen-fancy"></i></div>
-                                <div>
-                                    <h4>Content Drafting & Review</h4>
-                                    <p>AI drafts briefs, proposals, communications; assists with editing and proofing</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-content" value="3" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-content-pct" min="0" max="95" value="50" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">50%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>40–65% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">Harvard Business Review — "How AI Is Transforming Knowledge Work", 2024</div>
-                            </div>
-                        </div>
-
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                <div>
-                                    <h4>Risk Detection & Alerts</h4>
-                                    <p>AI proactively flags at-risk projects, missed deadlines, and resource conflicts</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-risk" value="2" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-risk-pct" min="0" max="95" value="65" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">65%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>55–80% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">Gartner — "AI in Project Portfolio Management", 2024</div>
-                            </div>
-                        </div>
-
-                        <div class="ai-use-case-card">
-                            <div class="ai-uc-header">
-                                <div class="ai-uc-icon"><i class="fas fa-calendar-check"></i></div>
-                                <div>
-                                    <h4>Meeting Prep & Follow-ups</h4>
-                                    <p>AI summarizes meetings, generates action items, and schedules follow-ups</p>
-                                </div>
-                            </div>
-                            <div class="ai-uc-inputs">
-                                <div class="ai-uc-field">
-                                    <label>Current hrs/week/employee</label>
-                                    <input type="number" id="ai-uc-meetings" value="2.5" min="0" max="20" step="0.5" onchange="calculateAIROI()">
-                                </div>
-                                <div class="ai-uc-field">
-                                    <label>AI Automation %</label>
-                                    <div class="slider-group">
-                                        <input type="range" id="ai-uc-meetings-pct" min="0" max="95" value="60" oninput="syncSlider(this); calculateAIROI()">
-                                        <span class="slider-value">60%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="benchmark-hint">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Benchmark: <strong>50–75% automatable</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">Microsoft Work Trend Index — "AI at Work", 2024</div>
-                            </div>
+                        <div class="form-group">
+                            <label>Number of Users</label>
+                            <input type="number" id="ai-num-users" value="25" min="1" onchange="calculateAIAgents()">
+                            <span class="input-hint">Licensed Wrike users</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Event Rows -->
                 <div class="form-section">
-                    <h3><i class="fas fa-shield-alt"></i> Quality & Speed Impact</h3>
-                    <p class="section-desc">Estimate additional business value from AI-driven improvements.</p>
-                    <div class="form-grid two-col">
-                        <div class="form-group">
-                            <label>Annual Cost of Errors / Rework ($)</label>
-                            <input type="number" id="ai-error-cost" value="120000" min="0" step="5000" onchange="calculateAIROI()">
-                            <span class="input-hint">Cost of mistakes that AI quality checks could prevent</span>
-                            <div class="benchmark-hint inline">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Industry range: <strong>$50K–$400K</strong></span>
-                                <button class="benchmark-source-btn" onclick="event.stopPropagation(); toggleBenchmarkTooltip(this)"><i class="fas fa-info-circle"></i></button>
-                                <div class="benchmark-tooltip">CISQ "Cost of Poor Quality" Report, 2023</div>
-                            </div>
+                    <h3><i class="fas fa-robot"></i> AI Agent Events</h3>
+                    <p class="section-desc">Select Wrike AI Agent workflows and estimate how often they occur and the time saved per event. You can add up to 6 custom rows below.</p>
+
+                    <div class="ai-events-table">
+                        <div class="ai-events-header">
+                            <span class="ai-evt-col-desc">Event Description</span>
+                            <span class="ai-evt-col-team">Team</span>
+                            <span class="ai-evt-col-num">Events / Month</span>
+                            <span class="ai-evt-col-num">Min Saved / Event</span>
+                            <span class="ai-evt-col-num">$/hr</span>
+                            <span class="ai-evt-col-num">AI Actions / Event</span>
+                            <span class="ai-evt-col-action"></span>
                         </div>
-                        <div class="form-group">
-                            <label>% Errors AI Can Prevent</label>
-                            <div class="slider-group">
-                                <input type="range" id="ai-error-reduction" min="0" max="70" value="30" oninput="syncSlider(this); calculateAIROI()">
-                                <span class="slider-value">30%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Annual Revenue Impacted by Speed ($)</label>
-                            <input type="number" id="ai-speed-revenue" value="200000" min="0" step="10000" onchange="calculateAIROI()">
-                            <span class="input-hint">Revenue gained from faster time-to-market/delivery</span>
-                        </div>
-                        <div class="form-group">
-                            <label>% Speed Improvement from AI</label>
-                            <div class="slider-group">
-                                <input type="range" id="ai-speed-improvement" min="0" max="60" value="20" oninput="syncSlider(this); calculateAIROI()">
-                                <span class="slider-value">20%</span>
+                        <div id="ai-event-rows"></div>
+                        <button class="btn btn-outline ai-add-row-btn" onclick="addAIEventRow()"><i class="fas fa-plus"></i> Add Event Row</button>
+                    </div>
+
+                    <div class="ai-actions-info">
+                        <div class="ai-action-reminder">
+                            <i class="fas fa-lightbulb"></i>
+                            <div>
+                                <strong>One event can require multiple AI Actions</strong>
+                                <p>Each discrete action the agent takes counts as 1 unit. Examples: reviewing content, assigning a user, filling a field, posting a comment, changing status.</p>
                             </div>
                         </div>
                     </div>
@@ -727,54 +560,86 @@
                 <div class="ai-results-sticky">
                     <div class="ai-results-card">
                         <div class="ai-results-header">
-                            <h3><i class="fas fa-robot"></i> AI Agent Value Summary</h3>
+                            <h3><i class="fas fa-robot"></i> Annual Impact</h3>
                         </div>
 
                         <div class="ai-kpi-grid">
                             <div class="ai-kpi green">
-                                <span class="ai-kpi-label">Time Saved Per Employee</span>
-                                <span class="ai-kpi-value" id="ai-kpi-hours">0 hrs/week</span>
+                                <span class="ai-kpi-label">Total Hours Saved</span>
+                                <span class="ai-kpi-value" id="ai-kpi-hours">0</span>
                             </div>
                             <div class="ai-kpi purple">
-                                <span class="ai-kpi-label">Total Annual Time Savings</span>
-                                <span class="ai-kpi-value" id="ai-kpi-total-hours">0 hours</span>
+                                <span class="ai-kpi-label">Total Value</span>
+                                <span class="ai-kpi-value" id="ai-kpi-total-value">$0</span>
                             </div>
-                            <div class="ai-kpi green">
-                                <span class="ai-kpi-label">Productivity Savings</span>
-                                <span class="ai-kpi-value" id="ai-kpi-prod-savings">$0</span>
-                            </div>
-                            <div class="ai-kpi teal">
-                                <span class="ai-kpi-label">Quality & Speed Gains</span>
-                                <span class="ai-kpi-value" id="ai-kpi-quality-savings">$0</span>
-                            </div>
-                        </div>
-
-                        <div class="ai-total-value">
-                            <span class="ai-total-label">Total Annual AI Agent Value</span>
-                            <span class="ai-total-value-num" id="ai-kpi-total-value">$0</span>
-                        </div>
-
-                        <div class="ai-breakdown-section">
-                            <h4>Breakdown by Use Case</h4>
-                            <div id="ai-breakdown-list" class="ai-breakdown-list"></div>
                         </div>
 
                         <div class="ai-equiv-section">
-                            <h4>What This Means</h4>
                             <div class="ai-equiv-grid">
                                 <div class="ai-equiv-item">
-                                    <span class="ai-equiv-num" id="ai-equiv-fte">0</span>
+                                    <span class="ai-equiv-num" id="ai-equiv-days">0</span>
+                                    <span class="ai-equiv-label">Working Days</span>
+                                </div>
+                                <div class="ai-equiv-item">
+                                    <span class="ai-equiv-num" id="ai-equiv-fte">0.0</span>
                                     <span class="ai-equiv-label">FTE Equivalent</span>
                                 </div>
-                                <div class="ai-equiv-item">
-                                    <span class="ai-equiv-num" id="ai-equiv-per-user">$0</span>
-                                    <span class="ai-equiv-label">Value / Employee</span>
+                            </div>
+                        </div>
+
+                        <!-- Consumption Section -->
+                        <div class="ai-consumption-section">
+                            <h4><i class="fas fa-tachometer-alt"></i> AI Agent Consumption</h4>
+                            <div class="ai-consumption-grid">
+                                <div class="ai-cons-row">
+                                    <span class="ai-cons-label">Monthly Actions Required</span>
+                                    <span class="ai-cons-value" id="ai-cons-required">0</span>
                                 </div>
-                                <div class="ai-equiv-item">
-                                    <span class="ai-equiv-num" id="ai-equiv-days">0</span>
-                                    <span class="ai-equiv-label">Days Recovered / Year</span>
+                                <div class="ai-cons-row">
+                                    <span class="ai-cons-label">Monthly Allotted Units</span>
+                                    <span class="ai-cons-value" id="ai-cons-allotted">0</span>
+                                </div>
+                                <div class="ai-cons-divider"></div>
+                                <div class="ai-cons-row">
+                                    <span class="ai-cons-label">Est. Annual AI Agent Spend</span>
+                                    <span class="ai-cons-value highlight" id="ai-cons-spend">$0</span>
+                                </div>
+                                <div class="ai-cons-row">
+                                    <span class="ai-cons-label">Monthly PPU Increase</span>
+                                    <span class="ai-cons-value" id="ai-cons-ppu">$0</span>
                                 </div>
                             </div>
+
+                            <div class="ai-cons-bar-section">
+                                <div class="ai-cons-bar-labels">
+                                    <span>Allotted</span>
+                                    <span>Required</span>
+                                </div>
+                                <div class="ai-cons-bar-container">
+                                    <div class="ai-cons-bar allotted" id="ai-cons-bar-allotted"></div>
+                                    <div class="ai-cons-bar required" id="ai-cons-bar-required"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ROI Summary -->
+                        <div class="ai-total-value">
+                            <span class="ai-total-label">Net Annual Value (Savings − Spend)</span>
+                            <span class="ai-total-value-num" id="ai-net-value">$0</span>
+                            <div class="ai-roi-line">
+                                <span>ROI:</span>
+                                <span id="ai-roi-pct">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown -->
+                        <div class="ai-breakdown-section">
+                            <h4>Breakdown by Event</h4>
+                            <div id="ai-breakdown-list" class="ai-breakdown-list"></div>
+                        </div>
+
+                        <div class="ai-assumptions-note">
+                            <p><strong>Assumptions:</strong> $50/hr default wage, 1 FTE = 2,080 hrs/yr, 50 working weeks/yr. Overage spend is estimated at $1,000 per 10,000 excess annual actions.</p>
                         </div>
                     </div>
                 </div>
